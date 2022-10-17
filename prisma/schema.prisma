@@ -21,19 +21,20 @@ model User {
   firstName    String
   lastName     String
   birthday     DateTime
-  email        String
+  email        String         @unique
+  password     String
   thumbnail    String
   phone        Int
   gender       String
   role         RoleType
   deleteFlg    Boolean
   createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  updatedAt    DateTime
   Notification Notification[]
-  Project      Project[]
-  tasks        Task[]
-  lists        List[]
-  groups       Group[]
+  UserProject  UserProject[]
+  UserGroup    UserGroup[]
+  UserList     UserList[]
+  UserTask     UserTask[]
 }
 
 model Notification {
@@ -45,42 +46,28 @@ model Notification {
 }
 
 model Project {
-  id      Int     @id @default(autoincrement())
-  name    String
-  id_user Int
-  User    User?   @relation(fields: [id_user], references: [id])
-  Group   Group[]
+  id          Int           @id @default(autoincrement())
+  name        String
+  Group       Group[]
+  UserProject UserProject[]
 }
 
 model Group {
-  id         Int          @id @default(autoincrement())
+  id         Int         @id @default(autoincrement())
   name       String
   id_project Int
-  Project    Project?     @relation(fields: [id_project], references: [id])
+  Project    Project?    @relation(fields: [id_project], references: [id])
   List       List[]
-  TaskStatus TaskStatus[]
-  users      User[]
+  UserGroup  UserGroup[]
 }
 
 model List {
-  id       Int    @id @default(autoincrement())
+  id       Int        @id @default(autoincrement())
   name     String
   id_group Int
-  Group    Group? @relation(fields: [id_group], references: [id])
+  Group    Group?     @relation(fields: [id_group], references: [id])
   Task     Task[]
-  users    User[]
-}
-
-model TaskStatus {
-  id Int @id @default(autoincrement())
-
-  color String
-
-  name String
-
-  id_group Int
-  Group    Group? @relation(fields: [id_group], references: [id])
-  Task     Task[]
+  UserList UserList[]
 }
 
 model Task {
@@ -95,9 +82,38 @@ model Task {
 
   estimate_time DateTime
 
-  level String
+  level    String
+  UserTask UserTask[]
+}
 
-  id_task_status Int
-  TaskStatus     TaskStatus? @relation(fields: [id_task_status], references: [id])
-  users          User[]
+model UserProject {
+  id         Int      @id @default(autoincrement())
+  id_user    Int
+  id_project Int?
+  User       User?    @relation(fields: [id_user], references: [id])
+  Project    Project? @relation(fields: [id_project], references: [id])
+}
+
+model UserGroup {
+  id       Int    @id @default(autoincrement())
+  id_user  Int
+  id_group Int?
+  User     User?  @relation(fields: [id_user], references: [id])
+  Group    Group? @relation(fields: [id_group], references: [id])
+}
+
+model UserList {
+  id      Int   @id @default(autoincrement())
+  id_user Int
+  id_list Int?
+  User    User? @relation(fields: [id_user], references: [id])
+  List    List? @relation(fields: [id_list], references: [id])
+}
+
+model UserTask {
+  id      Int   @id @default(autoincrement())
+  id_user Int
+  id_task Int?
+  User    User? @relation(fields: [id_user], references: [id])
+  Task    Task? @relation(fields: [id_task], references: [id])
 }
