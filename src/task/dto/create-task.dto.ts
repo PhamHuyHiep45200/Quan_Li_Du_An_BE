@@ -3,10 +3,10 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateTaskDto {
   @ApiProperty()
   id_item: number;
+
   @ApiProperty()
   id_user: number;
-  @ApiProperty()
-  name: string;
+
   @ApiProperty()
   descriptions: string;
 

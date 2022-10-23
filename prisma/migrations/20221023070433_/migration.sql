@@ -65,7 +65,6 @@ CREATE TABLE "Item" (
 -- CreateTable
 CREATE TABLE "Task" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
     "id_item" INTEGER,
     "descriptions" TEXT NOT NULL,
     "userManager" INTEGER NOT NULL,

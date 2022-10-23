@@ -6,10 +6,10 @@ import { CreateItemDto } from './dto/create-item.dto';
 export class ItemService {
   constructor(private prisma: PrismaService) {}
   findAll() {
-    this.prisma.project.findMany();
+    return this.prisma.item.findMany();
   }
   async create(createItemDto: CreateItemDto) {
-    const createProject = await this.prisma.item.create({
+    const createItem = await this.prisma.item.create({
       data: {
         id_group: createItemDto.id_group ? createItemDto.id_group : null,
         name: createItemDto.name,
@@ -17,14 +17,14 @@ export class ItemService {
         updatedAt: createItemDto.updatedAt,
       },
     });
-    if (createProject) {
-      this.prisma.userProject.create({
+    if (createItem) {
+      this.prisma.userItem.create({
         data: {
           id_user: createItemDto.id_user,
-          id_project: createProject.id,
+          id_item: createItem.id,
         },
       });
     }
-    return { createProject };
+    return { createItem };
   }
 }

@@ -9,7 +9,6 @@ export class TaskService {
     const createTask = await this.prisma.task.create({
       data: {
         id_item: createTaskDto.id_item ? createTaskDto.id_item : null,
-        name: createTaskDto.name,
         descriptions: createTaskDto.descriptions,
         userManager: createTaskDto.userManager,
         start_Time: createTaskDto.start_Time,
@@ -31,6 +30,6 @@ export class TaskService {
     return { createTask };
   }
   findAll() {
-    return this.prisma.group.findMany({});
+    return this.prisma.task.findMany({});
   }
 }

@@ -25,7 +25,7 @@ async function main() {
   });
 
   const post2 = await prisma.user.upsert({
-    where: { email: 'huyhiep4520@gmail.com' },
+    where: { email: 'phongk@gmail.com' },
     update: {},
     create: {
       firstName: 'Phong',

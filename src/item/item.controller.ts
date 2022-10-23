@@ -13,6 +13,6 @@ export class ItemController {
   }
   @Post()
   createProject(@Body() createProjectDto: CreateItemDto) {
-    this.itemService.create(createProjectDto);
+    return this.itemService.create(createProjectDto);
   }
 }

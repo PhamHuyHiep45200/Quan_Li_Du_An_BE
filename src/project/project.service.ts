@@ -6,7 +6,7 @@ import { CreateProjectDto } from './dto/create-project.dto';
 export class ProjectService {
   constructor(private prisma: PrismaService) {}
   findAll() {
-    this.prisma.project.findMany();
+    return this.prisma.project.findMany();
   }
   async create(createProjectDto: CreateProjectDto) {
     const createProject = await this.prisma.project.create({
