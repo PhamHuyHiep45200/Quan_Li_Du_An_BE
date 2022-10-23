@@ -24,7 +24,7 @@ model User {
   email        String         @unique
   password     String
   thumbnail    String
-  phone        Int
+  phone        String
   gender       String
   role         RoleType
   deleteFlg    Boolean
@@ -33,7 +33,7 @@ model User {
   Notification Notification[]
   UserProject  UserProject[]
   UserGroup    UserGroup[]
-  UserList     UserList[]
+  UserItem     UserItem[]
   UserTask     UserTask[]
 }
 
@@ -48,6 +48,8 @@ model Notification {
 model Project {
   id          Int           @id @default(autoincrement())
   name        String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime
   Group       Group[]
   UserProject UserProject[]
 }
@@ -55,32 +57,43 @@ model Project {
 model Group {
   id         Int         @id @default(autoincrement())
   name       String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime
   id_project Int
   Project    Project?    @relation(fields: [id_project], references: [id])
-  List       List[]
+  Item       Item[]
   UserGroup  UserGroup[]
 }
 
-model List {
-  id       Int        @id @default(autoincrement())
-  name     String
-  id_group Int
-  Group    Group?     @relation(fields: [id_group], references: [id])
-  Task     Task[]
-  UserList UserList[]
+model Item {
+  id        Int        @id @default(autoincrement())
+  name      String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime
+  id_group  Int
+  Group     Group?     @relation(fields: [id_group], references: [id])
+  Task      Task[]
+  UserItem  UserItem[]
 }
 
 model Task {
   id      Int    @id @default(autoincrement())
   name    String
-  id_list Int
-  List    List?  @relation(fields: [id_list], references: [id])
-
-  title String
+  id_item Int?
+  Item    Item?  @relation(fields: [id_item], references: [id])
 
   descriptions String
 
-  estimate_time DateTime
+  userManager Int
+
+  start_Time DateTime
+
+  end_Time DateTime
+
+  planned_Time DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime
 
   level    String
   UserTask UserTask[]
@@ -102,12 +115,12 @@ model UserGroup {
   Group    Group? @relation(fields: [id_group], references: [id])
 }
 
-model UserList {
+model UserItem {
   id      Int   @id @default(autoincrement())
   id_user Int
-  id_list Int?
+  id_item Int?
   User    User? @relation(fields: [id_user], references: [id])
-  List    List? @relation(fields: [id_list], references: [id])
+  Item    Item? @relation(fields: [id_item], references: [id])
 }
 
 model UserTask {

@@ -10,7 +10,7 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "thumbnail" TEXT NOT NULL,
-    "phone" INTEGER NOT NULL,
+    "phone" TEXT NOT NULL,
     "gender" TEXT NOT NULL,
     "role" "RoleType" NOT NULL,
     "deleteFlg" BOOLEAN NOT NULL,
@@ -34,6 +34,8 @@ CREATE TABLE "Notification" (
 CREATE TABLE "Project" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Project_pkey" PRIMARY KEY ("id")
 );
@@ -42,28 +44,36 @@ CREATE TABLE "Project" (
 CREATE TABLE "Group" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "id_project" INTEGER NOT NULL,
 
     CONSTRAINT "Group_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "List" (
+CREATE TABLE "Item" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "id_group" INTEGER NOT NULL,
 
-    CONSTRAINT "List_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Item_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Task" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
-    "id_list" INTEGER NOT NULL,
-    "title" TEXT NOT NULL,
+    "id_item" INTEGER,
     "descriptions" TEXT NOT NULL,
-    "estimate_time" TIMESTAMP(3) NOT NULL,
+    "userManager" INTEGER NOT NULL,
+    "start_Time" TIMESTAMP(3) NOT NULL,
+    "end_Time" TIMESTAMP(3) NOT NULL,
+    "planned_Time" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "level" TEXT NOT NULL,
 
     CONSTRAINT "Task_pkey" PRIMARY KEY ("id")
@@ -88,12 +98,12 @@ CREATE TABLE "UserGroup" (
 );
 
 -- CreateTable
-CREATE TABLE "UserList" (
+CREATE TABLE "UserItem" (
     "id" SERIAL NOT NULL,
     "id_user" INTEGER NOT NULL,
-    "id_list" INTEGER,
+    "id_item" INTEGER,
 
-    CONSTRAINT "UserList_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "UserItem_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -115,10 +125,10 @@ ALTER TABLE "Notification" ADD CONSTRAINT "Notification_id_user_fkey" FOREIGN KE
 ALTER TABLE "Group" ADD CONSTRAINT "Group_id_project_fkey" FOREIGN KEY ("id_project") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "List" ADD CONSTRAINT "List_id_group_fkey" FOREIGN KEY ("id_group") REFERENCES "Group"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Item" ADD CONSTRAINT "Item_id_group_fkey" FOREIGN KEY ("id_group") REFERENCES "Group"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Task" ADD CONSTRAINT "Task_id_list_fkey" FOREIGN KEY ("id_list") REFERENCES "List"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Task" ADD CONSTRAINT "Task_id_item_fkey" FOREIGN KEY ("id_item") REFERENCES "Item"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserProject" ADD CONSTRAINT "UserProject_id_user_fkey" FOREIGN KEY ("id_user") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -133,10 +143,10 @@ ALTER TABLE "UserGroup" ADD CONSTRAINT "UserGroup_id_user_fkey" FOREIGN KEY ("id
 ALTER TABLE "UserGroup" ADD CONSTRAINT "UserGroup_id_group_fkey" FOREIGN KEY ("id_group") REFERENCES "Group"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserList" ADD CONSTRAINT "UserList_id_user_fkey" FOREIGN KEY ("id_user") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserItem" ADD CONSTRAINT "UserItem_id_user_fkey" FOREIGN KEY ("id_user") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "UserList" ADD CONSTRAINT "UserList_id_list_fkey" FOREIGN KEY ("id_list") REFERENCES "List"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "UserItem" ADD CONSTRAINT "UserItem_id_item_fkey" FOREIGN KEY ("id_item") REFERENCES "Item"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserTask" ADD CONSTRAINT "UserTask_id_user_fkey" FOREIGN KEY ("id_user") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
