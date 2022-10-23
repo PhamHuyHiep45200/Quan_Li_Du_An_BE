@@ -8,6 +8,9 @@ export class CreateTaskDto {
   id_user: number;
 
   @ApiProperty()
+  taskParent: number;
+
+  @ApiProperty()
   descriptions: string;
 
   @ApiProperty()

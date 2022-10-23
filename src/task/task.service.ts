@@ -9,6 +9,7 @@ export class TaskService {
     const createTask = await this.prisma.task.create({
       data: {
         id_item: createTaskDto.id_item ? createTaskDto.id_item : null,
+        taskParent: createTaskDto.taskParent ? createTaskDto.taskParent : null,
         descriptions: createTaskDto.descriptions,
         userManager: createTaskDto.userManager,
         start_Time: createTaskDto.start_Time,

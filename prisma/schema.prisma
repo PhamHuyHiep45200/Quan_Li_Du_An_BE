@@ -91,6 +91,8 @@ model Task {
 
   planned_Time DateTime
 
+  taskParent Int?
+
   createdAt DateTime @default(now())
   updatedAt DateTime
 
