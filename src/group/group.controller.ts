@@ -1,4 +1,11 @@
-import { Body, Controller, Post, Get } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Get,
+  Param,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { GroupService } from './group.service';
@@ -7,13 +14,19 @@ import { GroupService } from './group.service';
 @Controller('group')
 export class GroupController {
   constructor(private readonly groupService: GroupService) {}
-  @Post()
-  createGroup(@Body() createGroupDto: CreateGroupDto) {
-    return this.groupService.create(createGroupDto);
-  }
 
   @Get()
   getAllGroup() {
     return this.groupService.findAll();
+  }
+
+  @Get('/:idProject')
+  getGroupId(@Param('idProject', ParseIntPipe) idProject: number) {
+    return this.groupService.findId(idProject);
+  }
+
+  @Post()
+  async createGroup(@Body() createGroupDto: CreateGroupDto) {
+    return this.groupService.create(createGroupDto);
   }
 }

@@ -59,7 +59,7 @@ model Group {
   name       String
   createdAt  DateTime    @default(now())
   updatedAt  DateTime
-  id_project Int
+  id_project Int?
   Project    Project?    @relation(fields: [id_project], references: [id])
   Item       Item[]
   UserGroup  UserGroup[]
@@ -70,7 +70,7 @@ model Item {
   name      String
   createdAt DateTime   @default(now())
   updatedAt DateTime
-  id_group  Int
+  id_group  Int?
   Group     Group?     @relation(fields: [id_group], references: [id])
   Task      Task[]
   UserItem  UserItem[]

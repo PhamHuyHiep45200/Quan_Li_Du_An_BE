@@ -6,27 +6,28 @@ import { CreateGroupDto } from './dto/create-group.dto';
 export class GroupService {
   constructor(private prisma: PrismaService) {}
   async create(createGroupDto: CreateGroupDto) {
-    const createGroup = await this.prisma.group.create({
+    return await this.prisma.group.create({
       data: {
-        id_project: createGroupDto.id_project
-          ? createGroupDto.id_project
-          : null,
+        id_project: createGroupDto.id_project,
         name: createGroupDto.name,
         createdAt: createGroupDto.createdAt,
         updatedAt: createGroupDto.updatedAt,
+        UserGroup: {
+          create: {
+            id_user: createGroupDto.id_user,
+          },
+        },
       },
     });
-    if (createGroup) {
-      this.prisma.userGroup.create({
-        data: {
-          id_user: createGroupDto.id_user,
-          id_group: createGroup.id,
-        },
-      });
-    }
-    return { createGroup };
   }
   findAll() {
     return this.prisma.group.findMany({});
+  }
+  findId(idProject: number) {
+    return this.prisma.group.findMany({
+      where: {
+        id_project: idProject,
+      },
+    });
   }
 }

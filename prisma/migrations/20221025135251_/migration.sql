@@ -71,7 +71,7 @@ CREATE TABLE "Task" (
     "start_Time" TIMESTAMP(3) NOT NULL,
     "end_Time" TIMESTAMP(3) NOT NULL,
     "planned_Time" TIMESTAMP(3) NOT NULL,
-    "taskParent" INTEGER NOT NULL,
+    "taskParent" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "level" TEXT NOT NULL,

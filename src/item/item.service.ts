@@ -8,23 +8,26 @@ export class ItemService {
   findAll() {
     return this.prisma.item.findMany();
   }
+  findItemId(idGroup: number) {
+    return this.prisma.item.findMany({
+      where: {
+        id_group: idGroup,
+      },
+    });
+  }
   async create(createItemDto: CreateItemDto) {
-    const createItem = await this.prisma.item.create({
+    return await this.prisma.item.create({
       data: {
-        id_group: createItemDto.id_group ? createItemDto.id_group : null,
+        id_group: createItemDto.id_group,
         name: createItemDto.name,
         createdAt: createItemDto.createdAt,
         updatedAt: createItemDto.updatedAt,
+        UserItem: {
+          create: {
+            id_user: createItemDto.id_user,
+          },
+        },
       },
     });
-    if (createItem) {
-      this.prisma.userItem.create({
-        data: {
-          id_user: createItemDto.id_user,
-          id_item: createItem.id,
-        },
-      });
-    }
-    return { createItem };
   }
 }

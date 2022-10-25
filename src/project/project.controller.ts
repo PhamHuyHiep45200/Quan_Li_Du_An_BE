@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectService } from './project.service';
@@ -10,6 +17,10 @@ export class ProjectController {
   @Get()
   getAll() {
     return this.projectService.findAll();
+  }
+  @Get('/:idUser')
+  getProjectId(@Param('idUser', ParseIntPipe) idUser: number) {
+    return this.projectService.findId(idUser);
   }
   @Post()
   createProject(@Body() createProjectDto: CreateProjectDto) {

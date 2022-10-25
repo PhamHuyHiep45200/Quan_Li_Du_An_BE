@@ -1,13 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 
 export class CreateTaskDto {
-  @ApiProperty()
+  @ApiProperty({ default: null })
+  @IsOptional()
   id_item: number;
 
   @ApiProperty()
   id_user: number;
 
-  @ApiProperty()
+  @ApiProperty({ default: null })
+  @IsOptional()
   taskParent: number;
 
   @ApiProperty()

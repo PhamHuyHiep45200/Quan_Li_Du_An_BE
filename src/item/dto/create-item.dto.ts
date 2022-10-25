@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
 
 export class CreateItemDto {
-  @ApiProperty()
+  @ApiProperty({ default: null })
+  @IsOptional()
   id_group: number;
   @ApiProperty()
   id_user: number;
