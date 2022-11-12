@@ -1,6 +1,12 @@
 -- CreateEnum
 CREATE TYPE "RoleType" AS ENUM ('SUPPERADMIN', 'ADMIN', 'USER');
 
+-- CreateEnum
+CREATE TYPE "RoleProjectGroup" AS ENUM ('ADMIN', 'USER');
+
+-- CreateEnum
+CREATE TYPE "StatusVerify" AS ENUM ('REJECT', 'PENDDING', 'APPROVED');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
@@ -46,7 +52,7 @@ CREATE TABLE "Group" (
     "name" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "id_project" INTEGER NOT NULL,
+    "id_project" INTEGER,
 
     CONSTRAINT "Group_pkey" PRIMARY KEY ("id")
 );
@@ -57,7 +63,7 @@ CREATE TABLE "Item" (
     "name" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "id_group" INTEGER NOT NULL,
+    "id_group" INTEGER,
 
     CONSTRAINT "Item_pkey" PRIMARY KEY ("id")
 );
@@ -67,14 +73,13 @@ CREATE TABLE "Task" (
     "id" SERIAL NOT NULL,
     "id_item" INTEGER,
     "descriptions" TEXT NOT NULL,
-    "userManager" INTEGER NOT NULL,
-    "start_Time" TIMESTAMP(3) NOT NULL,
-    "end_Time" TIMESTAMP(3) NOT NULL,
-    "planned_Time" TIMESTAMP(3) NOT NULL,
+    "userManager" INTEGER,
+    "start_Time" TEXT,
+    "end_Time" TEXT,
     "taskParent" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "level" TEXT NOT NULL,
+    "level" TEXT,
 
     CONSTRAINT "Task_pkey" PRIMARY KEY ("id")
 );
@@ -82,6 +87,8 @@ CREATE TABLE "Task" (
 -- CreateTable
 CREATE TABLE "UserProject" (
     "id" SERIAL NOT NULL,
+    "role" "RoleProjectGroup" NOT NULL,
+    "status" "StatusVerify" NOT NULL,
     "id_user" INTEGER NOT NULL,
     "id_project" INTEGER,
 
@@ -91,6 +98,8 @@ CREATE TABLE "UserProject" (
 -- CreateTable
 CREATE TABLE "UserGroup" (
     "id" SERIAL NOT NULL,
+    "role" "RoleProjectGroup" NOT NULL,
+    "status" "StatusVerify" NOT NULL,
     "id_user" INTEGER NOT NULL,
     "id_group" INTEGER,
 
@@ -122,10 +131,10 @@ CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 ALTER TABLE "Notification" ADD CONSTRAINT "Notification_id_user_fkey" FOREIGN KEY ("id_user") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Group" ADD CONSTRAINT "Group_id_project_fkey" FOREIGN KEY ("id_project") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Group" ADD CONSTRAINT "Group_id_project_fkey" FOREIGN KEY ("id_project") REFERENCES "Project"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Item" ADD CONSTRAINT "Item_id_group_fkey" FOREIGN KEY ("id_group") REFERENCES "Group"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Item" ADD CONSTRAINT "Item_id_group_fkey" FOREIGN KEY ("id_group") REFERENCES "Group"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Task" ADD CONSTRAINT "Task_id_item_fkey" FOREIGN KEY ("id_item") REFERENCES "Item"("id") ON DELETE SET NULL ON UPDATE CASCADE;

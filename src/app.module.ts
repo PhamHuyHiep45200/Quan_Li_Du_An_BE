@@ -8,6 +8,8 @@ import { ProjectModule } from './project/project.module';
 import { GroupModule } from './group/group.module';
 import { ItemModule } from './item/item.module';
 import { TaskModule } from './task/task.module';
+import { UserProjectModule } from './user-project/user-project.module';
+import { UserGroupModule } from './user-group/user-group.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { TaskModule } from './task/task.module';
     GroupModule,
     ItemModule,
     TaskModule,
+    UserProjectModule,
+    UserGroupModule,
   ],
   controllers: [AppController],
   providers: [AppService],

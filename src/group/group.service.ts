@@ -10,24 +10,27 @@ export class GroupService {
       data: {
         id_project: createGroupDto.id_project,
         name: createGroupDto.name,
-        createdAt: createGroupDto.createdAt,
-        updatedAt: createGroupDto.updatedAt,
         UserGroup: {
           create: {
             id_user: createGroupDto.id_user,
+            status: 'APPROVED',
+            role: 'ADMIN',
           },
         },
       },
     });
   }
   findAll() {
-    return this.prisma.group.findMany({});
+    return this.prisma.group.findMany();
   }
-  findId(idProject: number) {
-    return this.prisma.group.findMany({
-      where: {
-        id_project: idProject,
-      },
+  async findId(idProject: number) {
+    const group = await this.prisma.project.findFirst({
+      include: { Group: { where: { id_project: idProject } } },
     });
+    const user = await this.prisma.userProject.findMany({
+      where: { id_project: idProject, status: 'APPROVED' },
+      include: { User: true },
+    });
+    return { status: 200, group, user };
   }
 }

@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -14,6 +15,17 @@ enum RoleType {
   SUPPERADMIN
   ADMIN
   USER
+}
+
+enum RoleProjectGroup {
+  ADMIN
+  USER
+}
+
+enum StatusVerify {
+  REJECT
+  PENDDING
+  APPROVED
 }
 
 model User {
@@ -29,7 +41,7 @@ model User {
   role         RoleType
   deleteFlg    Boolean
   createdAt    DateTime       @default(now())
-  updatedAt    DateTime
+  updatedAt    DateTime       @updatedAt
   Notification Notification[]
   UserProject  UserProject[]
   UserGroup    UserGroup[]
@@ -49,7 +61,7 @@ model Project {
   id          Int           @id @default(autoincrement())
   name        String
   createdAt   DateTime      @default(now())
-  updatedAt   DateTime
+  updatedAt   DateTime      @updatedAt
   Group       Group[]
   UserProject UserProject[]
 }
@@ -58,7 +70,7 @@ model Group {
   id         Int         @id @default(autoincrement())
   name       String
   createdAt  DateTime    @default(now())
-  updatedAt  DateTime
+  updatedAt  DateTime    @updatedAt
   id_project Int?
   Project    Project?    @relation(fields: [id_project], references: [id])
   Item       Item[]
@@ -69,7 +81,7 @@ model Item {
   id        Int        @id @default(autoincrement())
   name      String
   createdAt DateTime   @default(now())
-  updatedAt DateTime
+  updatedAt DateTime   @updatedAt
   id_group  Int?
   Group     Group?     @relation(fields: [id_group], references: [id])
   Task      Task[]
@@ -83,37 +95,41 @@ model Task {
 
   descriptions String
 
-  userManager Int
+  userManager Int?
 
-  start_Time DateTime
+  start_Time String?
 
-  end_Time DateTime
-
-  planned_Time DateTime
+  end_Time String?
 
   taskParent Int?
 
   createdAt DateTime @default(now())
-  updatedAt DateTime
+  updatedAt DateTime @updatedAt
 
-  level    String
+  level    String?
   UserTask UserTask[]
 }
 
 model UserProject {
-  id         Int      @id @default(autoincrement())
-  id_user    Int
-  id_project Int?
-  User       User?    @relation(fields: [id_user], references: [id])
-  Project    Project? @relation(fields: [id_project], references: [id])
+  id             Int              @id @default(autoincrement())
+  role           RoleProjectGroup
+  status         StatusVerify
+  id_user_parent Int?
+  id_user        Int
+  id_project     Int?
+  User           User?            @relation(fields: [id_user], references: [id])
+  Project        Project?         @relation(fields: [id_project], references: [id])
 }
 
 model UserGroup {
-  id       Int    @id @default(autoincrement())
-  id_user  Int
-  id_group Int?
-  User     User?  @relation(fields: [id_user], references: [id])
-  Group    Group? @relation(fields: [id_group], references: [id])
+  id             Int              @id @default(autoincrement())
+  role           RoleProjectGroup
+  status         StatusVerify
+  id_user_parent Int?
+  id_user        Int
+  id_group       Int?
+  User           User?            @relation(fields: [id_user], references: [id])
+  Group          Group?           @relation(fields: [id_group], references: [id])
 }
 
 model UserItem {

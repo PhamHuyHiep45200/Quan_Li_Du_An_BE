@@ -16,6 +16,4 @@ export class CreateUserDto {
   role: RoleType;
   @ApiProperty({ default: false })
   deleteFlg: boolean;
-  createdAt: Date;
-  updatedAt: Date;
 }

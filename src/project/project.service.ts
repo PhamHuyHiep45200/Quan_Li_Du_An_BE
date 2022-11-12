@@ -10,9 +10,8 @@ export class ProjectService {
   }
   async findId(idUser: number) {
     const projects = await this.prisma.project.findMany({
-      where: {
-        UserProject: { some: { id_user: idUser } },
-      },
+      where: { UserProject: { some: { id_user: idUser, status: 'APPROVED' } } },
+      include: { UserProject: { include: { User: true } } },
     });
     const groups = await this.prisma.group.findMany({
       where: {
@@ -38,17 +37,41 @@ export class ProjectService {
         },
       },
     });
-    return { project: projects, groups: groups, item: items, task: tasks };
+    return {
+      status: 200,
+      data: [
+        {
+          type: 'PROJECT',
+          name: 'project',
+          data: projects,
+        },
+        {
+          type: 'GROUP',
+          name: 'group',
+          data: groups,
+        },
+        {
+          type: 'ITEM',
+          name: 'item',
+          data: items,
+        },
+        {
+          type: 'TASK',
+          name: 'task',
+          data: tasks,
+        },
+      ],
+    };
   }
   async create(createProjectDto: CreateProjectDto) {
     return await this.prisma.project.create({
       data: {
         name: createProjectDto.name,
-        createdAt: createProjectDto.createdAt,
-        updatedAt: createProjectDto.updatedAt,
         UserProject: {
           create: {
             id_user: createProjectDto.id_user,
+            status: 'APPROVED',
+            role: 'ADMIN',
           },
         },
       },

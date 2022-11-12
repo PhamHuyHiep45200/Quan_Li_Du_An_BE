@@ -15,13 +15,35 @@ export class ItemService {
       },
     });
   }
+  async searchUsers(id_item, query) {
+    let data = [];
+    const datas = await this.prisma.item.findFirst({
+      where: { id: id_item },
+      include: {
+        Group: {
+          include: {
+            UserGroup: {
+              include: {
+                User: true,
+              },
+              where: { status: 'APPROVED' },
+            },
+          },
+        },
+      },
+    });
+    if (data) {
+      data = datas.Group.UserGroup.filter((user) =>
+        user.User.email.includes(query.q),
+      );
+    }
+    return { status: 200, data };
+  }
   async create(createItemDto: CreateItemDto) {
     return await this.prisma.item.create({
       data: {
         id_group: createItemDto.id_group,
         name: createItemDto.name,
-        createdAt: createItemDto.createdAt,
-        updatedAt: createItemDto.updatedAt,
         UserItem: {
           create: {
             id_user: createItemDto.id_user,

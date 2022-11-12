@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { QueryGetUser } from './dto/query-get-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
@@ -12,8 +13,14 @@ export class UserService {
     });
   }
 
-  findAll() {
-    return this.prisma.user.findMany({ where: { deleteFlg: false } });
+  async findAll(query: QueryGetUser) {
+    const data = await this.prisma.user.findMany({
+      where: {
+        deleteFlg: false,
+        email: { contains: query.q, mode: 'insensitive' },
+      },
+    });
+    return { status: 200, data };
   }
 
   findOne(id: number) {

@@ -11,28 +11,25 @@ export class CreateTaskDto {
 
   @ApiProperty({ default: null })
   @IsOptional()
-  taskParent: number;
+  @IsOptional()
+  id_taskParent: number;
 
   @ApiProperty()
   descriptions: string;
 
   @ApiProperty()
+  @IsOptional()
   userManager: number;
 
   @ApiProperty()
+  @IsOptional()
   start_Time: string;
 
   @ApiProperty()
+  @IsOptional()
   end_Time: string;
 
   @ApiProperty()
-  planned_Time: string;
-
-  @ApiProperty()
-  createdAt: string;
-  @ApiProperty()
-  updatedAt: string;
-
-  @ApiProperty()
+  @IsOptional()
   level: string;
 }
