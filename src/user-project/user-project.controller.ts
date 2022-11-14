@@ -24,10 +24,6 @@ export class UserProjectController {
   getAll() {
     return this.userProject.finAll();
   }
-  @Get('/notify/:id_user')
-  getNotifyAccept(@Param('id_user') id_user: number) {
-    return this.userProject.getNotifyAccep(id_user);
-  }
   @Get(':id_project')
   getUsersProject(@Param('id_project', ParseIntPipe) id_project: number) {
     return this.userProject.getUsersProject(id_project);

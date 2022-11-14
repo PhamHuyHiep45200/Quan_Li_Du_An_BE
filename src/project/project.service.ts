@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { QuerySearchUser } from './dto/search-user.dto';
 
 @Injectable()
 export class ProjectService {
@@ -72,9 +73,40 @@ export class ProjectService {
             id_user: createProjectDto.id_user,
             status: 'APPROVED',
             role: 'ADMIN',
+            type: 'project',
           },
         },
       },
     });
+  }
+  async searchUserProject(id_project: number, query: QuerySearchUser) {
+    const userAll = await this.prisma.user.findMany({
+      where: {
+        email: { contains: query.q },
+      },
+    });
+    const userProjects = await this.prisma.userProject.findMany({
+      where: { id_project, status: 'APPROVED' },
+      include: { User: true },
+    });
+    const res = userAll.filter(
+      (all) =>
+        userProjects.filter((uPro) => uPro.User.id === all.id).length === 0,
+    );
+    return { status: 200, res };
+  }
+  async getNotifyAccep(id_user: number) {
+    const dataProject = await this.prisma.userProject.findMany({
+      where: {
+        id_user,
+        status: 'PENDDING',
+      },
+      include: { User: true, UserParent: true },
+    });
+    const dataGroup = await this.prisma.userGroup.findMany({
+      where: { id_user, status: 'PENDDING' },
+      include: { User: true },
+    });
+    return { status: 200, dataProject, dataGroup };
   }
 }

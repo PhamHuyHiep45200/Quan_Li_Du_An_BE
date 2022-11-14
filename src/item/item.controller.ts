@@ -31,6 +31,10 @@ export class ItemController {
   ) {
     return this.itemService.searchUsers(id_item, query);
   }
+  @Get('get-all-user-group/:id_item')
+  searchUsersAll(@Param('id_item', ParseIntPipe) id_item: number) {
+    return this.itemService.searchUsersAll(id_item);
+  }
   @Post()
   createProject(@Body() createProjectDto: CreateItemDto) {
     return this.itemService.create(createProjectDto);

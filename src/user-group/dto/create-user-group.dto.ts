@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { RoleProjectGroup, StatusVerify } from '@prisma/client';
+import { RoleProjectGroup } from '@prisma/client';
 import { IsEnum, IsOptional } from 'class-validator';
 
 export class CreateUserGroupDto {
@@ -10,9 +10,6 @@ export class CreateUserGroupDto {
   id_user: number;
   @ApiProperty()
   id_group: number;
-  @IsEnum(StatusVerify)
-  @ApiProperty({ enum: StatusVerify, default: 'PENDDING' })
-  status: StatusVerify;
   @IsEnum(RoleProjectGroup)
   @ApiProperty({ enum: RoleProjectGroup, default: 'USER' })
   role: RoleProjectGroup;

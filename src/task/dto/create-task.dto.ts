@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
+import { StatusTask } from '@prisma/client';
+import { IsEnum, IsOptional } from 'class-validator';
 
 export class CreateTaskDto {
   @ApiProperty({ default: null })
@@ -8,6 +9,10 @@ export class CreateTaskDto {
 
   @ApiProperty()
   id_user: number;
+
+  @IsEnum(StatusTask)
+  @ApiProperty({ enum: StatusTask, default: 'OPEN' })
+  status: StatusTask;
 
   @ApiProperty({ default: null })
   @IsOptional()

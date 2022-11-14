@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateGroupDto } from './dto/create-group.dto';
+import { SearchUserGroup } from './dto/search-user.dto';
 
 @Injectable()
 export class GroupService {
@@ -15,6 +16,7 @@ export class GroupService {
             id_user: createGroupDto.id_user,
             status: 'APPROVED',
             role: 'ADMIN',
+            type: 'group',
           },
         },
       },
@@ -32,5 +34,22 @@ export class GroupService {
       include: { User: true },
     });
     return { status: 200, group, user };
+  }
+
+  async searchUserGroup(id_group: number, query: SearchUserGroup) {
+    const userAll = await this.prisma.user.findMany({
+      where: {
+        email: { contains: query.q },
+      },
+    });
+    const userProjects = await this.prisma.userGroup.findMany({
+      where: { id_group, status: 'APPROVED' },
+      include: { User: true },
+    });
+    const res = userAll.filter(
+      (all) =>
+        userProjects.filter((uPro) => uPro.User.id === all.id).length === 0,
+    );
+    return { status: 200, res };
   }
 }

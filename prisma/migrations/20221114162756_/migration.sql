@@ -2,6 +2,9 @@
 CREATE TYPE "RoleType" AS ENUM ('SUPPERADMIN', 'ADMIN', 'USER');
 
 -- CreateEnum
+CREATE TYPE "StatusTask" AS ENUM ('OPEN', 'DOING', 'COMPLETED', 'ILLEGAL', 'PENDDING');
+
+-- CreateEnum
 CREATE TYPE "RoleProjectGroup" AS ENUM ('ADMIN', 'USER');
 
 -- CreateEnum
@@ -74,6 +77,7 @@ CREATE TABLE "Task" (
     "id_item" INTEGER,
     "descriptions" TEXT NOT NULL,
     "userManager" INTEGER,
+    "status" "StatusTask" NOT NULL,
     "start_Time" TEXT,
     "end_Time" TEXT,
     "taskParent" INTEGER,
@@ -89,6 +93,8 @@ CREATE TABLE "UserProject" (
     "id" SERIAL NOT NULL,
     "role" "RoleProjectGroup" NOT NULL,
     "status" "StatusVerify" NOT NULL,
+    "type" TEXT NOT NULL,
+    "id_user_parent" INTEGER,
     "id_user" INTEGER NOT NULL,
     "id_project" INTEGER,
 
@@ -100,8 +106,11 @@ CREATE TABLE "UserGroup" (
     "id" SERIAL NOT NULL,
     "role" "RoleProjectGroup" NOT NULL,
     "status" "StatusVerify" NOT NULL,
+    "type" TEXT NOT NULL,
+    "id_user_parent" INTEGER,
     "id_user" INTEGER NOT NULL,
     "id_group" INTEGER,
+    "userId" INTEGER,
 
     CONSTRAINT "UserGroup_pkey" PRIMARY KEY ("id")
 );
@@ -140,10 +149,16 @@ ALTER TABLE "Item" ADD CONSTRAINT "Item_id_group_fkey" FOREIGN KEY ("id_group") 
 ALTER TABLE "Task" ADD CONSTRAINT "Task_id_item_fkey" FOREIGN KEY ("id_item") REFERENCES "Item"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "UserProject" ADD CONSTRAINT "UserProject_id_user_parent_fkey" FOREIGN KEY ("id_user_parent") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "UserProject" ADD CONSTRAINT "UserProject_id_user_fkey" FOREIGN KEY ("id_user") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserProject" ADD CONSTRAINT "UserProject_id_project_fkey" FOREIGN KEY ("id_project") REFERENCES "Project"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserGroup" ADD CONSTRAINT "UserGroup_id_user_parent_fkey" FOREIGN KEY ("id_user_parent") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserGroup" ADD CONSTRAINT "UserGroup_id_user_fkey" FOREIGN KEY ("id_user") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

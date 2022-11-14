@@ -3,11 +3,14 @@ import {
   Post,
   Get,
   Body,
+  Query,
   Param,
   ParseIntPipe,
+  Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskService } from './task.service';
 
 @ApiTags('task')
@@ -25,5 +28,12 @@ export class TaskController {
   @Post()
   createGroup(@Body() createTaskDto: CreateTaskDto) {
     return this.taskService.create(createTaskDto);
+  }
+  @Put(':id')
+  updateStatusTask(
+    @Param('id', ParseIntPipe) id: number,
+    @Query() updateTaskDto: UpdateTaskDto,
+  ) {
+    return this.taskService.updateStatusTask(id, updateTaskDto);
   }
 }

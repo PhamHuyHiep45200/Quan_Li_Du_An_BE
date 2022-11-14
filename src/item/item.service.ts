@@ -8,12 +8,16 @@ export class ItemService {
   findAll() {
     return this.prisma.item.findMany();
   }
-  findItemId(idGroup: number) {
-    return this.prisma.item.findMany({
-      where: {
-        id_group: idGroup,
-      },
+  async findItemId(idGroup: number) {
+    const item = await this.prisma.group.findFirst({
+      where: { id: idGroup },
+      include: { Item: { where: { id_group: idGroup } } },
     });
+    const user = await this.prisma.userGroup.findMany({
+      where: { id_group: idGroup, status: 'APPROVED' },
+      include: { User: true },
+    });
+    return { status: 200, item, user };
   }
   async searchUsers(id_item, query) {
     let data = [];
@@ -37,6 +41,24 @@ export class ItemService {
         user.User.email.includes(query.q),
       );
     }
+    return { status: 200, data };
+  }
+  async searchUsersAll(id_item: number) {
+    const data = await this.prisma.item.findFirst({
+      where: { id: id_item },
+      include: {
+        Group: {
+          include: {
+            UserGroup: {
+              include: {
+                User: true,
+              },
+              where: { status: 'APPROVED' },
+            },
+          },
+        },
+      },
+    });
     return { status: 200, data };
   }
   async create(createItemDto: CreateItemDto) {

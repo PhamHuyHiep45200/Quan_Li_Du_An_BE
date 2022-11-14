@@ -8,17 +8,11 @@ export class UserProjectService {
   constructor(private prisma: PrismaService) {}
   create(createUserProject: CreateUserProjectDto) {
     return this.prisma.userProject.create({
-      data: createUserProject,
+      data: { ...createUserProject, type: 'project' },
     });
   }
   finAll() {
     return this.prisma.userProject.findMany();
-  }
-  async getNotifyAccep(id_user: number) {
-    const data = await this.prisma.userProject.findMany({
-      where: { id_user, status: 'PENDDING' },
-    });
-    return { status: 200, data };
   }
   async getUsersProject(id_project: number) {
     const data = await this.prisma.userProject.findMany({

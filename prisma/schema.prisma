@@ -17,6 +17,14 @@ enum RoleType {
   USER
 }
 
+enum StatusTask {
+  OPEN
+  DOING
+  COMPLETED
+  ILLEGAL
+  PENDDING
+}
+
 enum RoleProjectGroup {
   ADMIN
   USER
@@ -29,24 +37,26 @@ enum StatusVerify {
 }
 
 model User {
-  id           Int            @id @default(autoincrement())
-  firstName    String
-  lastName     String
-  birthday     DateTime
-  email        String         @unique
-  password     String
-  thumbnail    String
-  phone        String
-  gender       String
-  role         RoleType
-  deleteFlg    Boolean
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-  Notification Notification[]
-  UserProject  UserProject[]
-  UserGroup    UserGroup[]
-  UserItem     UserItem[]
-  UserTask     UserTask[]
+  id                Int            @id @default(autoincrement())
+  firstName         String
+  lastName          String
+  birthday          DateTime
+  email             String         @unique
+  password          String
+  thumbnail         String
+  phone             String
+  gender            String
+  role              RoleType
+  deleteFlg         Boolean
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  Notification      Notification[]
+  UserProject       UserProject[]  @relation("project_user")
+  UserGroup         UserGroup[]    @relation("group_user")
+  UserItem          UserItem[]
+  UserTask          UserTask[]
+  UserGroupParent   UserGroup[]    @relation("group_parent")
+  UserProjectParent UserProject[]  @relation("project_parent")
 }
 
 model Notification {
@@ -97,6 +107,8 @@ model Task {
 
   userManager Int?
 
+  status StatusTask
+
   start_Time String?
 
   end_Time String?
@@ -114,10 +126,12 @@ model UserProject {
   id             Int              @id @default(autoincrement())
   role           RoleProjectGroup
   status         StatusVerify
+  type           String
   id_user_parent Int?
   id_user        Int
   id_project     Int?
-  User           User?            @relation(fields: [id_user], references: [id])
+  UserParent     User?            @relation("project_parent", fields: [id_user_parent], references: [id])
+  User           User?            @relation("project_user", fields: [id_user], references: [id])
   Project        Project?         @relation(fields: [id_project], references: [id])
 }
 
@@ -125,11 +139,14 @@ model UserGroup {
   id             Int              @id @default(autoincrement())
   role           RoleProjectGroup
   status         StatusVerify
+  type           String
   id_user_parent Int?
   id_user        Int
   id_group       Int?
-  User           User?            @relation(fields: [id_user], references: [id])
+  UserParent     User?            @relation("group_parent", fields: [id_user_parent], references: [id])
+  User           User?            @relation("group_user", fields: [id_user], references: [id])
   Group          Group?           @relation(fields: [id_group], references: [id])
+  userId         Int?
 }
 
 model UserItem {
