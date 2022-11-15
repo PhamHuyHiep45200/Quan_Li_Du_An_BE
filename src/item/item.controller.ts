@@ -6,10 +6,12 @@ import {
   Param,
   ParseIntPipe,
   Query,
+  Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateItemDto } from './dto/create-item.dto';
 import { SearchUser } from './dto/search-user.dto';
+import { UpdateItemDto } from './dto/update-item.dto';
 import { ItemService } from './item.service';
 
 @ApiTags('item')
@@ -38,5 +40,16 @@ export class ItemController {
   @Post()
   createProject(@Body() createProjectDto: CreateItemDto) {
     return this.itemService.create(createProjectDto);
+  }
+  @Put('update/:id_item')
+  updateGroup(
+    @Param('id_item', ParseIntPipe) id_item: number,
+    @Body() updateItemDto: UpdateItemDto,
+  ) {
+    return this.itemService.updateItem(id_item, updateItemDto);
+  }
+  @Put('delete/:id_item')
+  deleteItem(@Param('id_item', ParseIntPipe) id_item: number) {
+    return this.itemService.deleteItem(id_item);
   }
 }

@@ -29,11 +29,15 @@ export class TaskController {
   createGroup(@Body() createTaskDto: CreateTaskDto) {
     return this.taskService.create(createTaskDto);
   }
-  @Put(':id')
+  @Put('update:id')
   updateStatusTask(
     @Param('id', ParseIntPipe) id: number,
     @Query() updateTaskDto: UpdateTaskDto,
   ) {
     return this.taskService.updateStatusTask(id, updateTaskDto);
+  }
+  @Put('delete:id')
+  deleteStatusTask(@Param('id', ParseIntPipe) id: number) {
+    return this.taskService.deleteStatusTask(id);
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { QuerySearchUser } from './dto/search-user.dto';
+import { UpdateProjectDto } from './dto/update-project.dto';
 
 @Injectable()
 export class ProjectService {
@@ -101,12 +102,29 @@ export class ProjectService {
         id_user,
         status: 'PENDDING',
       },
-      include: { User: true, UserParent: true },
+      include: { User: true, UserParent: true, Project: true },
     });
     const dataGroup = await this.prisma.userGroup.findMany({
       where: { id_user, status: 'PENDDING' },
       include: { User: true },
     });
-    return { status: 200, dataProject, dataGroup };
+    const data = [...dataProject, ...dataGroup];
+    return { status: 200, data };
+  }
+  async updateProject(id_project: number, updateProject: UpdateProjectDto) {
+    const data = await this.prisma.project.update({
+      where: { id: id_project },
+      data: {
+        name: updateProject.name,
+      },
+    });
+    return { status: 200, data };
+  }
+  async deleteProject(id_project: number) {
+    const data = await this.prisma.project.update({
+      where: { id: id_project },
+      data: { deleteFlg: true },
+    });
+    return { status: 200, data };
   }
 }

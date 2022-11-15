@@ -70,9 +70,14 @@ export class TaskService {
   async updateStatusTask(id: number, query: UpdateTaskDto) {
     const data = await this.prisma.task.update({
       where: { id },
-      data: {
-        status: query.status,
-      },
+      data: query,
+    });
+    return { status: 200, data };
+  }
+  async deleteStatusTask(id: number) {
+    const data = await this.prisma.task.update({
+      where: { id },
+      data: { deleteFlg: true },
     });
     return { status: 200, data };
   }

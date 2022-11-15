@@ -6,10 +6,12 @@ import {
   Param,
   ParseIntPipe,
   Query,
+  Put,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { SearchUserGroup } from './dto/search-user.dto';
+import { UpdateGroupDto } from './dto/update-group.dto';
 import { GroupService } from './group.service';
 
 @ApiTags('group')
@@ -38,5 +40,16 @@ export class GroupController {
   @Post()
   async createGroup(@Body() createGroupDto: CreateGroupDto) {
     return this.groupService.create(createGroupDto);
+  }
+  @Put('update/:id_group')
+  updateGroup(
+    @Param('id_group', ParseIntPipe) id_group: number,
+    @Body() updateGroupDto: UpdateGroupDto,
+  ) {
+    return this.groupService.updateGroup(id_group, updateGroupDto);
+  }
+  @Put('delete/:id_group')
+  deleteGroup(@Param('id_group', ParseIntPipe) id_group: number) {
+    return this.groupService.deleteGroup(id_group);
   }
 }

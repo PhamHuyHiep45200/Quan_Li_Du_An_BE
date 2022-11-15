@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { SearchUserGroup } from './dto/search-user.dto';
+import { UpdateGroupDto } from './dto/update-group.dto';
 
 @Injectable()
 export class GroupService {
@@ -51,5 +52,19 @@ export class GroupService {
         userProjects.filter((uPro) => uPro.User.id === all.id).length === 0,
     );
     return { status: 200, res };
+  }
+  async updateGroup(id_group: number, updateUserGroupDto: UpdateGroupDto) {
+    const data = this.prisma.group.update({
+      where: { id: id_group },
+      data: { name: updateUserGroupDto.name },
+    });
+    return { status: 200, data };
+  }
+  async deleteGroup(id_group: number) {
+    const data = this.prisma.group.update({
+      where: { id: id_group },
+      data: { deleteFlg: true },
+    });
+    return { status: 200, data };
   }
 }

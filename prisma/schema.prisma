@@ -70,6 +70,7 @@ model Notification {
 model Project {
   id          Int           @id @default(autoincrement())
   name        String
+  deleteFlg   Boolean       @default(false)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   Group       Group[]
@@ -79,6 +80,7 @@ model Project {
 model Group {
   id         Int         @id @default(autoincrement())
   name       String
+  deleteFlg  Boolean     @default(false)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   id_project Int?
@@ -90,6 +92,7 @@ model Group {
 model Item {
   id        Int        @id @default(autoincrement())
   name      String
+  deleteFlg Boolean    @default(false)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   id_group  Int?
@@ -106,6 +109,7 @@ model Task {
   descriptions String
 
   userManager Int?
+  deleteFlg   Boolean @default(false)
 
   status StatusTask
 
@@ -140,6 +144,7 @@ model UserGroup {
   role           RoleProjectGroup
   status         StatusVerify
   type           String
+  deleteFlg      Boolean          @default(false)
   id_user_parent Int?
   id_user        Int
   id_group       Int?
@@ -150,17 +155,19 @@ model UserGroup {
 }
 
 model UserItem {
-  id      Int   @id @default(autoincrement())
-  id_user Int
-  id_item Int?
-  User    User? @relation(fields: [id_user], references: [id])
-  Item    Item? @relation(fields: [id_item], references: [id])
+  id        Int     @id @default(autoincrement())
+  id_user   Int
+  deleteFlg Boolean @default(false)
+  id_item   Int?
+  User      User?   @relation(fields: [id_user], references: [id])
+  Item      Item?   @relation(fields: [id_item], references: [id])
 }
 
 model UserTask {
-  id      Int   @id @default(autoincrement())
-  id_user Int
-  id_task Int?
-  User    User? @relation(fields: [id_user], references: [id])
-  Task    Task? @relation(fields: [id_task], references: [id])
+  id        Int     @id @default(autoincrement())
+  deleteFlg Boolean @default(false)
+  id_user   Int
+  id_task   Int?
+  User      User?   @relation(fields: [id_user], references: [id])
+  Task      Task?   @relation(fields: [id_task], references: [id])
 }
