@@ -29,7 +29,7 @@ export class TaskController {
   createGroup(@Body() createTaskDto: CreateTaskDto) {
     return this.taskService.create(createTaskDto);
   }
-  @Put('update:id')
+  @Put('update/:id')
   updateStatusTask(
     @Param('id', ParseIntPipe) id: number,
     @Query() updateTaskDto: UpdateTaskDto,

@@ -70,6 +70,7 @@ model Notification {
 model Project {
   id          Int           @id @default(autoincrement())
   name        String
+  typeName    String        @default("project")
   deleteFlg   Boolean       @default(false)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -80,6 +81,7 @@ model Project {
 model Group {
   id         Int         @id @default(autoincrement())
   name       String
+  typeName   String      @default("group")
   deleteFlg  Boolean     @default(false)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
@@ -92,6 +94,7 @@ model Group {
 model Item {
   id        Int        @id @default(autoincrement())
   name      String
+  typeName  String     @default("item")
   deleteFlg Boolean    @default(false)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt

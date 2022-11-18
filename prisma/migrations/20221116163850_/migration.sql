@@ -43,6 +43,8 @@ CREATE TABLE "Notification" (
 CREATE TABLE "Project" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "typeName" TEXT NOT NULL DEFAULT 'project',
+    "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -53,6 +55,8 @@ CREATE TABLE "Project" (
 CREATE TABLE "Group" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "typeName" TEXT NOT NULL DEFAULT 'group',
+    "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "id_project" INTEGER,
@@ -64,6 +68,8 @@ CREATE TABLE "Group" (
 CREATE TABLE "Item" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
+    "typeName" TEXT NOT NULL DEFAULT 'item',
+    "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "id_group" INTEGER,
@@ -77,6 +83,7 @@ CREATE TABLE "Task" (
     "id_item" INTEGER,
     "descriptions" TEXT NOT NULL,
     "userManager" INTEGER,
+    "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
     "status" "StatusTask" NOT NULL,
     "start_Time" TEXT,
     "end_Time" TEXT,
@@ -107,6 +114,7 @@ CREATE TABLE "UserGroup" (
     "role" "RoleProjectGroup" NOT NULL,
     "status" "StatusVerify" NOT NULL,
     "type" TEXT NOT NULL,
+    "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
     "id_user_parent" INTEGER,
     "id_user" INTEGER NOT NULL,
     "id_group" INTEGER,
@@ -119,6 +127,7 @@ CREATE TABLE "UserGroup" (
 CREATE TABLE "UserItem" (
     "id" SERIAL NOT NULL,
     "id_user" INTEGER NOT NULL,
+    "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
     "id_item" INTEGER,
 
     CONSTRAINT "UserItem_pkey" PRIMARY KEY ("id")
@@ -127,6 +136,7 @@ CREATE TABLE "UserItem" (
 -- CreateTable
 CREATE TABLE "UserTask" (
     "id" SERIAL NOT NULL,
+    "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
     "id_user" INTEGER NOT NULL,
     "id_task" INTEGER,
 

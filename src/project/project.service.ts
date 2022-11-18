@@ -11,59 +11,15 @@ export class ProjectService {
     return this.prisma.project.findMany();
   }
   async findId(idUser: number) {
-    const projects = await this.prisma.project.findMany({
-      where: { UserProject: { some: { id_user: idUser, status: 'APPROVED' } } },
-      include: { UserProject: { include: { User: true } } },
+    const res = await this.prisma.userProject.findMany({
+      where: { id_user: idUser },
+      include: { Project: { include: { Group: { include: { Item: true } } } } },
     });
-    const groups = await this.prisma.group.findMany({
-      where: {
-        id_project: null,
-        UserGroup: {
-          some: { id_user: idUser },
-        },
-      },
+    const data = [];
+    res.map((da) => {
+      data.push(da.Project);
     });
-    const items = await this.prisma.item.findMany({
-      where: {
-        id_group: null,
-        UserItem: {
-          some: { id_user: idUser },
-        },
-      },
-    });
-    const tasks = await this.prisma.task.findMany({
-      where: {
-        id_item: null,
-        UserTask: {
-          some: { id_user: idUser },
-        },
-      },
-    });
-    return {
-      status: 200,
-      data: [
-        {
-          type: 'PROJECT',
-          name: 'project',
-          data: projects,
-        },
-        {
-          type: 'GROUP',
-          name: 'group',
-          data: groups,
-        },
-        {
-          type: 'ITEM',
-          name: 'item',
-          data: items,
-        },
-        {
-          type: 'TASK',
-          name: 'task',
-          data: tasks,
-        },
-      ],
-    };
+    return { status: 200, data };
   }
   async create(createProjectDto: CreateProjectDto) {
     return await this.prisma.project.create({
