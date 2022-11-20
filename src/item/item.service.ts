@@ -67,11 +67,11 @@ export class ItemService {
       data: {
         id_group: createItemDto.id_group,
         name: createItemDto.name,
-        UserItem: {
-          create: {
-            id_user: createItemDto.id_user,
-          },
-        },
+        // UserItem: {
+        //   create: {
+        //     id_user: createItemDto.id_user,
+        //   },
+        // },
       },
     });
   }

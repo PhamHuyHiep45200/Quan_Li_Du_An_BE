@@ -10,6 +10,8 @@ import { ItemModule } from './item/item.module';
 import { TaskModule } from './task/task.module';
 import { UserProjectModule } from './user-project/user-project.module';
 import { UserGroupModule } from './user-group/user-group.module';
+import { UserItemModule } from './user_item/user_item.module';
+import { ChartModule } from './chart/chart.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { UserGroupModule } from './user-group/user-group.module';
     TaskModule,
     UserProjectModule,
     UserGroupModule,
+    UserItemModule,
+    ChartModule,
   ],
   controllers: [AppController],
   providers: [AppService],

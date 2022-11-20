@@ -17,7 +17,7 @@ export class CreateTaskDto {
   @ApiProperty({ default: null })
   @IsOptional()
   @IsOptional()
-  id_taskParent: number;
+  taskParentId: number;
 
   @ApiProperty()
   descriptions: string;

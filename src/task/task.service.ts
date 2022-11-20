@@ -45,12 +45,28 @@ export class TaskService {
     }
     return { status: 200, data, count: dataResponse?.Task?.length };
   }
+  getTaskIdChil() {
+    return this.prisma.task.findMany({
+      include: { taskParent: true, taskChildren: true },
+    });
+  }
   async create(createTaskDto: CreateTaskDto) {
-    return await this.prisma.task.create({
+    const id_user_item = await this.prisma.userItem.findFirst({
+      where: { id_user: createTaskDto.id_user, id_item: createTaskDto.id_item },
+    });
+    if (!id_user_item) {
+      await this.prisma.userItem.create({
+        data: {
+          id_item: createTaskDto.id_item,
+          id_user: createTaskDto.id_user,
+        },
+      });
+    }
+    const data = await this.prisma.task.create({
       data: {
         id_item: createTaskDto.id_item,
         status: createTaskDto.status,
-        taskParent: createTaskDto.id_taskParent,
+        taskParentId: createTaskDto.taskParentId,
         descriptions: createTaskDto.descriptions,
         userManager: createTaskDto.userManager,
         start_Time: createTaskDto.start_Time,
@@ -63,6 +79,7 @@ export class TaskService {
         },
       },
     });
+    return { status: 200, data };
   }
   findAll() {
     return this.prisma.item.findMany();
