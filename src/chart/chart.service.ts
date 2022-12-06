@@ -10,7 +10,17 @@ export class ChartService {
   async getChartItem(id: number) {
     const data = await this.prisma.userItem.findMany({
       where: { id_item: id },
-      include: { User: { include: { UserTask: { include: { Task: true } } } } },
+      include: {
+        User: {
+          include: {
+            UserTask: {
+              include: {
+                Task: { include: { UserTask: { include: { User: true } } } },
+              },
+            },
+          },
+        },
+      },
     });
     const dataSubmit = [];
     data.map((da) => {
@@ -25,7 +35,7 @@ export class ChartService {
         count: 0,
       };
       const dataFilterItem = da.User.UserTask.filter(
-        (fil) => fil.Task.id_item === id,
+        (fil) => fil?.Task?.id_item === id,
       );
       dataFilterItem.map((task) => {
         dataStatus[task.Task.status].push(task.Task);
@@ -41,6 +51,7 @@ export class ChartService {
         lastName: da.User.lastName,
         birthday: da.User.birthday,
         email: da.User.email,
+        thumbnail: da.User.thumbnail,
         data: dataStatus,
       });
     });

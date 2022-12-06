@@ -8,7 +8,7 @@ export class AuthService {
   async loginAuth(createAuthDto: CreateAuthDto) {
     const user = await this.prisma.user.findFirst({
       where: {
-        email: createAuthDto.userName,
+        email: createAuthDto.email,
       },
     });
     if (user) {

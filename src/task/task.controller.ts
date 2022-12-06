@@ -7,6 +7,7 @@ import {
   Param,
   ParseIntPipe,
   Put,
+  Delete,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -25,12 +26,7 @@ export class TaskController {
   getTaskId(@Param('idItem', ParseIntPipe) idItem: number) {
     return this.taskService.findId(idItem);
   }
-  @Get('/task-chil/:id')
-  getTaskIdChil(@Param('id', ParseIntPipe) id: number) {
-    console.log(id);
 
-    return this.taskService.getTaskIdChil();
-  }
   @Post()
   createGroup(@Body() createTaskDto: CreateTaskDto) {
     return this.taskService.create(createTaskDto);
@@ -42,7 +38,7 @@ export class TaskController {
   ) {
     return this.taskService.updateStatusTask(id, updateTaskDto);
   }
-  @Put('delete:id')
+  @Delete('delete/:id')
   deleteStatusTask(@Param('id', ParseIntPipe) id: number) {
     return this.taskService.deleteStatusTask(id);
   }

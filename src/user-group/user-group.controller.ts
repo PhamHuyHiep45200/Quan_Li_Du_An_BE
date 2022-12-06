@@ -25,10 +25,18 @@ export class UserGroupController {
   addUserGroup(@Body() createUserGroupDto: CreateUserGroupDto) {
     return this.userGroupService.addUserGroup(createUserGroupDto);
   }
+  @Get(':id_group')
+  getUsersProject(@Param('id_group', ParseIntPipe) id_group: number) {
+    return this.userGroupService.getUsersGroup(id_group);
+  }
+  @Get('search-group/:id_project')
+  searchGroup(@Param('id_project', ParseIntPipe) id_project: number) {
+    return this.userGroupService.searchGroup(id_project);
+  }
   @Put(':id')
   updateUserGroup(
     @Param('id', ParseIntPipe) id: number,
-    updateUserGroupDto: UpdateUserGrouptDto,
+    @Body() updateUserGroupDto: UpdateUserGrouptDto,
   ) {
     return this.userGroupService.updateUserGroup(id, updateUserGroupDto);
   }

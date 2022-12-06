@@ -6,4 +6,6 @@ export class UpdateUserProjectDto {
   @IsEnum(StatusVerify)
   @ApiProperty({ enum: StatusVerify })
   status: StatusVerify;
+  @ApiProperty()
+  id_user: number;
 }

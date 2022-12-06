@@ -6,4 +6,6 @@ export class UpdateUserGrouptDto {
   @IsEnum(StatusVerify)
   @ApiProperty({ enum: StatusVerify })
   status: StatusVerify;
+  @ApiProperty()
+  id_user_update: number;
 }

@@ -62,7 +62,7 @@ export class ProjectService {
     });
     const dataGroup = await this.prisma.userGroup.findMany({
       where: { id_user, status: 'PENDDING' },
-      include: { User: true },
+      include: { User: true, UserParent: true, Group: true },
     });
     const data = [...dataProject, ...dataGroup];
     return { status: 200, data };

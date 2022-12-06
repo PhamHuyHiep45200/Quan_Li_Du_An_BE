@@ -12,9 +12,14 @@ import { UserProjectModule } from './user-project/user-project.module';
 import { UserGroupModule } from './user-group/user-group.module';
 import { UserItemModule } from './user_item/user_item.module';
 import { ChartModule } from './chart/chart.module';
+import { MailService } from './mail/mail.service';
+import { ConfigModule } from '@nestjs/config';
+import { MailController } from './mail/mail.controller';
+import { EventsModule } from './event/events.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     PrismaModule,
     UserModule,
     AuthModule,
@@ -26,8 +31,9 @@ import { ChartModule } from './chart/chart.module';
     UserGroupModule,
     UserItemModule,
     ChartModule,
+    EventsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, MailController],
+  providers: [AppService, MailService],
 })
 export class AppModule {}

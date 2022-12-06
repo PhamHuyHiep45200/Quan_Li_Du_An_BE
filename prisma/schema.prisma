@@ -27,6 +27,7 @@ enum StatusTask {
 
 enum RoleProjectGroup {
   ADMIN
+  MANAGER
   USER
 }
 
@@ -71,6 +72,8 @@ model Project {
   id          Int           @id @default(autoincrement())
   name        String
   typeName    String        @default("project")
+  startDate   DateTime
+  endDate     DateTime
   deleteFlg   Boolean       @default(false)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
@@ -83,6 +86,8 @@ model Group {
   name       String
   typeName   String      @default("group")
   deleteFlg  Boolean     @default(false)
+  startDate  DateTime
+  endDate    DateTime
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   id_project Int?
@@ -96,6 +101,8 @@ model Item {
   name      String
   typeName  String     @default("item")
   deleteFlg Boolean    @default(false)
+  startDate DateTime
+  endDate   DateTime
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   id_group  Int?
@@ -111,10 +118,10 @@ model Task {
 
   descriptions String
 
-  userManager Int?
-  deleteFlg   Boolean @default(false)
+  deleteFlg Boolean @default(false)
 
-  status StatusTask
+  status    StatusTask
+  thumbnail String[]
 
   start_Time String?
 
@@ -123,11 +130,31 @@ model Task {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  level        String?
-  UserTask     UserTask[]
-  taskParentId Int?
-  taskParent   Task?      @relation("task_parent", fields: [taskParentId], references: [id])
-  taskChildren Task[]     @relation("task_parent")
+  level           String?
+  UserTask        UserTask[] @relation("user_asggin")
+  TaskUserManager UserTask[] @relation("user_manager")
+  taskParentId    Int?
+  taskParent      Task?      @relation("task_parent", fields: [taskParentId], references: [id])
+  taskChildren    Task[]     @relation("task_parent")
+  History         History[]
+}
+
+model History {
+  id Int @id @default(autoincrement())
+
+  descriptions String?
+
+  status StatusTask?
+
+  start_Time String?
+
+  end_Time String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  taskHistory Int
+  TaskHistory Task @relation(fields: [taskHistory], references: [id])
 }
 
 model UserProject {
@@ -138,6 +165,8 @@ model UserProject {
   id_user_parent Int?
   id_user        Int
   id_project     Int?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
   UserParent     User?            @relation("project_parent", fields: [id_user_parent], references: [id])
   User           User?            @relation("project_user", fields: [id_user], references: [id])
   Project        Project?         @relation(fields: [id_project], references: [id])
@@ -152,6 +181,8 @@ model UserGroup {
   id_user_parent Int?
   id_user        Int
   id_group       Int?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
   UserParent     User?            @relation("group_parent", fields: [id_user_parent], references: [id])
   User           User?            @relation("group_user", fields: [id_user], references: [id])
   Group          Group?           @relation(fields: [id_group], references: [id])
@@ -168,10 +199,13 @@ model UserItem {
 }
 
 model UserTask {
-  id        Int     @id @default(autoincrement())
-  deleteFlg Boolean @default(false)
-  id_user   Int
-  id_task   Int?
-  User      User?   @relation(fields: [id_user], references: [id])
-  Task      Task?   @relation(fields: [id_task], references: [id])
+  id              Int     @id @default(autoincrement())
+  deleteFlg       Boolean @default(false)
+  id_user         Int
+  id_task         Int?
+  id_taskManager  Int?
+  userManager     Int?
+  User            User?   @relation(fields: [id_user], references: [id])
+  Task            Task?   @relation("user_asggin", fields: [id_task], references: [id])
+  TaskUserManager Task?   @relation("user_manager", fields: [id_taskManager], references: [id])
 }

@@ -87,10 +87,10 @@ CREATE TABLE "Task" (
     "status" "StatusTask" NOT NULL,
     "start_Time" TEXT,
     "end_Time" TEXT,
-    "taskParent" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "level" TEXT,
+    "taskParentId" INTEGER,
 
     CONSTRAINT "Task_pkey" PRIMARY KEY ("id")
 );
@@ -104,6 +104,8 @@ CREATE TABLE "UserProject" (
     "id_user_parent" INTEGER,
     "id_user" INTEGER NOT NULL,
     "id_project" INTEGER,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "UserProject_pkey" PRIMARY KEY ("id")
 );
@@ -118,6 +120,8 @@ CREATE TABLE "UserGroup" (
     "id_user_parent" INTEGER,
     "id_user" INTEGER NOT NULL,
     "id_group" INTEGER,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "userId" INTEGER,
 
     CONSTRAINT "UserGroup_pkey" PRIMARY KEY ("id")
@@ -157,6 +161,9 @@ ALTER TABLE "Item" ADD CONSTRAINT "Item_id_group_fkey" FOREIGN KEY ("id_group") 
 
 -- AddForeignKey
 ALTER TABLE "Task" ADD CONSTRAINT "Task_id_item_fkey" FOREIGN KEY ("id_item") REFERENCES "Item"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Task" ADD CONSTRAINT "Task_taskParentId_fkey" FOREIGN KEY ("taskParentId") REFERENCES "Task"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserProject" ADD CONSTRAINT "UserProject_id_user_parent_fkey" FOREIGN KEY ("id_user_parent") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

@@ -1,54 +1,104 @@
 import { Injectable } from '@nestjs/common';
+import { EventsGateway } from 'src/event/events.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TaskService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly eventsGateway: EventsGateway,
+  ) {}
   async findId(idItem: number) {
+    const dataAll = await this.prisma.task.findMany({
+      where: { id_item: idItem },
+      include: {
+        taskParent: true,
+        taskChildren: true,
+        UserTask: { include: { User: true } },
+      },
+    });
+    const filterFuc = (id: number) => {
+      return dataAll.filter((da) => da.taskParentId === id);
+    };
+    const deQuyData = (dataParent) => {
+      dataParent.map((parent) => {
+        if (parent?.taskChildren?.length > 0) {
+          const dataChil = filterFuc(parent.id);
+          parent['children'] = dataChil;
+          if (dataChil.length > 0) {
+            deQuyData(dataChil);
+          }
+        }
+      });
+      return dataParent;
+    };
     const dataResponse: any = await this.prisma.item.findFirst({
       where: {
         id: idItem,
       },
-      include: { Task: { include: { UserTask: { include: { User: true } } } } },
+      include: {
+        Task: {
+          include: {
+            UserTask: { include: { User: true } },
+            taskParent: true,
+            taskChildren: true,
+            TaskUserManager: { include: { User: true } },
+          },
+        },
+      },
     });
     const data: any = [];
     if (dataResponse) {
       data.push({
         name: 'Open',
         type: 'OPEN',
-        data: dataResponse?.Task?.filter((item) => item?.status === 'OPEN'),
+        data: deQuyData(
+          dataResponse?.Task?.filter(
+            (item) => item?.status === 'OPEN' && item?.taskParentId == null,
+          ),
+        ),
       });
       data.push({
         name: 'Doing',
         type: 'DOING',
-        data: dataResponse?.Task?.filter((item) => item?.status === 'DOING'),
+        data: deQuyData(
+          dataResponse?.Task?.filter(
+            (item) => item?.status === 'DOING' && item?.taskParentId == null,
+          ),
+        ),
       });
       data.push({
         name: 'Completed',
         type: 'COMPLETED',
-        data: dataResponse?.Task?.filter(
-          (item) => item?.status === 'COMPLETED',
+        data: deQuyData(
+          dataResponse?.Task?.filter(
+            (item) =>
+              item?.status === 'COMPLETED' && item?.taskParentId == null,
+          ),
         ),
       });
       data.push({
         name: 'Illegal',
         type: 'ILLEGAL',
-        data: dataResponse?.Task?.filter((item) => item?.status === 'ILLEGAL'),
+        data: deQuyData(
+          dataResponse?.Task?.filter(
+            (item) => item?.status === 'ILLEGAL' && item?.taskParentId == null,
+          ),
+        ),
       });
       data.push({
         name: 'Pendding',
         type: 'PENDDING',
-        data: dataResponse?.Task?.filter((item) => item?.status === 'PENDDING'),
+        data: deQuyData(
+          dataResponse?.Task?.filter(
+            (item) => item?.status === 'PENDDING' && item?.taskParentId == null,
+          ),
+        ),
       });
     }
     return { status: 200, data, count: dataResponse?.Task?.length };
-  }
-  getTaskIdChil() {
-    return this.prisma.task.findMany({
-      include: { taskParent: true, taskChildren: true },
-    });
   }
   async create(createTaskDto: CreateTaskDto) {
     const id_user_item = await this.prisma.userItem.findFirst({
@@ -68,18 +118,19 @@ export class TaskService {
         status: createTaskDto.status,
         taskParentId: createTaskDto.taskParentId,
         descriptions: createTaskDto.descriptions,
-        userManager: createTaskDto.userManager,
         start_Time: createTaskDto.start_Time,
         end_Time: createTaskDto.end_Time,
-        level: createTaskDto.level,
+        thumbnail: createTaskDto.thumbnail,
         UserTask: {
           create: {
             id_user: createTaskDto.id_user,
+            userManager: createTaskDto.userManager,
           },
         },
       },
     });
-    return { status: 200, data };
+    const dataUserTask = await this.prisma.userTask.findMany({});
+    return { status: 200, data, dataUserTask };
   }
   findAll() {
     return this.prisma.item.findMany();
@@ -89,12 +140,12 @@ export class TaskService {
       where: { id },
       data: query,
     });
+    await this.eventsGateway.handleEvent(query);
     return { status: 200, data };
   }
   async deleteStatusTask(id: number) {
-    const data = await this.prisma.task.update({
+    const data = await this.prisma.task.delete({
       where: { id },
-      data: { deleteFlg: true },
     });
     return { status: 200, data };
   }

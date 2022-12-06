@@ -14,6 +14,10 @@ export class UpdateTaskDto {
 
   @IsOptional()
   @ApiProperty()
+  thumbnail: string[];
+
+  @IsOptional()
+  @ApiProperty()
   start_Time: string;
 
   @IsOptional()
@@ -23,8 +27,4 @@ export class UpdateTaskDto {
   @IsOptional()
   @ApiProperty()
   userManager: number;
-
-  @IsOptional()
-  @ApiProperty()
-  level: string;
 }

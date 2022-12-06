@@ -10,12 +10,15 @@ export class CreateTaskDto {
   @ApiProperty()
   id_user: number;
 
+  @IsOptional()
+  @ApiProperty()
+  thumbnail: string[];
+
   @IsEnum(StatusTask)
   @ApiProperty({ enum: StatusTask, default: 'OPEN' })
   status: StatusTask;
 
   @ApiProperty({ default: null })
-  @IsOptional()
   @IsOptional()
   taskParentId: number;
 
@@ -33,8 +36,4 @@ export class CreateTaskDto {
   @ApiProperty()
   @IsOptional()
   end_Time: string;
-
-  @ApiProperty()
-  @IsOptional()
-  level: string;
 }
