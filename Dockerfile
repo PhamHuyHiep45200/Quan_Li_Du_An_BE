@@ -49,6 +49,7 @@ COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modul
 COPY --chown=node:node . .
 
 # Run the build command which creates the production bundle
+COPY . . 
 RUN yarn build
 
 # Set NODE_ENV environment variable
