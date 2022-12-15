@@ -11,9 +11,12 @@ export class UserGroupService {
     return this.prisma.userGroup.findMany({});
   }
   async addUserGroup(createUserGroupDto: CreateUserGroupDto) {
+    let data = {};
     const userCreate = await this.prisma.userGroup.findFirst({
-      where: { id_user_parent: createUserGroupDto.id_user_parent },
+      where: { id_user: createUserGroupDto.id_user_parent },
     });
+    console.log(userCreate);
+
     if (userCreate && userCreate.role !== 'USER') {
       const user_group = await this.prisma.userGroup.findFirst({
         where: {
@@ -21,20 +24,39 @@ export class UserGroupService {
           id_user: createUserGroupDto.id_user,
         },
       });
-      const data = await this.prisma.userGroup.upsert({
-        where: { id: user_group.id },
-        update: {
-          status: 'PENDDING',
-        },
-        create: {
-          id_user: createUserGroupDto.id_user,
-          status: 'APPROVED',
-          role: createUserGroupDto.role,
-          id_group: createUserGroupDto.id_group,
-          id_user_parent: createUserGroupDto.id_user_parent,
-          type: 'group',
-        },
-      });
+      if (user_group) {
+        data = await this.prisma.userGroup.update({
+          where: { id: user_group.id },
+          data: {
+            status: 'APPROVED',
+          },
+        });
+      } else {
+        data = await this.prisma.userGroup.create({
+          data: {
+            id_user: createUserGroupDto.id_user,
+            status: 'APPROVED',
+            role: createUserGroupDto.role,
+            id_group: createUserGroupDto.id_group,
+            id_user_parent: createUserGroupDto.id_user_parent,
+            type: 'group',
+          },
+        });
+      }
+      // data = await this.prisma.userGroup.upsert({
+      //   where: { id: user_group.id },
+      //   update: {
+      //     status: 'PENDDING',
+      //   },
+      //   create: {
+      //     id_user: createUserGroupDto.id_user,
+      //     status: 'APPROVED',
+      //     role: createUserGroupDto.role,
+      //     id_group: createUserGroupDto.id_group,
+      //     id_user_parent: createUserGroupDto.id_user_parent,
+      //     type: 'group',
+      //   },
+      // });
       return { status: 200, data };
     }
     return {

@@ -9,4 +9,8 @@ export class CreateGroupDto {
   id_user: number;
   @ApiProperty()
   name: string;
+  @ApiProperty()
+  startDate: Date;
+  @ApiProperty()
+  endDate: Date;
 }

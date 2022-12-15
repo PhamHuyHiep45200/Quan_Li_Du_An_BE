@@ -8,5 +8,5 @@ export class CreateProjectDto {
   @ApiProperty()
   startDate: Date;
   @ApiProperty()
-  enđate: Date;
+  endDate: Date;
 }

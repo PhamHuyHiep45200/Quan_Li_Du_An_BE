@@ -58,6 +58,7 @@ model User {
   UserTask          UserTask[]
   UserGroupParent   UserGroup[]    @relation("group_parent")
   UserProjectParent UserProject[]  @relation("project_parent")
+  CommentTask       CommentTask[]
 }
 
 model Notification {
@@ -79,6 +80,7 @@ model Project {
   updatedAt   DateTime      @updatedAt
   Group       Group[]
   UserProject UserProject[]
+  Document    Document[]
 }
 
 model Group {
@@ -94,6 +96,7 @@ model Group {
   Project    Project?    @relation(fields: [id_project], references: [id])
   Item       Item[]
   UserGroup  UserGroup[]
+  Document   Document[]
 }
 
 model Item {
@@ -112,31 +115,38 @@ model Item {
 }
 
 model Task {
-  id      Int   @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
   id_item Int?
-  Item    Item? @relation(fields: [id_item], references: [id])
+
+  Item Item? @relation(fields: [id_item], references: [id])
 
   descriptions String
 
   deleteFlg Boolean @default(false)
 
-  status    StatusTask
+  status StatusTask
+
   thumbnail String[]
 
   start_Time String?
 
   end_Time String?
 
+  private Boolean @default(false)
+
   createdAt DateTime @default(now())
+
   updatedAt DateTime @updatedAt
 
   level           String?
-  UserTask        UserTask[] @relation("user_asggin")
-  TaskUserManager UserTask[] @relation("user_manager")
+  UserTask        UserTask[]    @relation("user_asggin")
+  TaskUserManager UserTask[]    @relation("user_manager")
   taskParentId    Int?
-  taskParent      Task?      @relation("task_parent", fields: [taskParentId], references: [id])
-  taskChildren    Task[]     @relation("task_parent")
+  taskParent      Task?         @relation("task_parent", fields: [taskParentId], references: [id])
+  taskChildren    Task[]        @relation("task_parent")
   History         History[]
+  CommentTask     CommentTask[]
 }
 
 model History {
@@ -208,4 +218,28 @@ model UserTask {
   User            User?   @relation(fields: [id_user], references: [id])
   Task            Task?   @relation("user_asggin", fields: [id_task], references: [id])
   TaskUserManager Task?   @relation("user_manager", fields: [id_taskManager], references: [id])
+}
+
+model Document {
+  id          Int      @id @default(autoincrement())
+  deleteFlg   Boolean  @default(false)
+  data        String
+  type        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  projectId   Int?
+  projectDocs Project? @relation(fields: [projectId], references: [id])
+  groupId     Int?
+  groupDocs   Group?   @relation(fields: [groupId], references: [id])
+}
+
+model CommentTask {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deleteFlg   Boolean  @default(false)
+  taskId      Int
+  commentTask Task     @relation(fields: [taskId], references: [id])
+  userId      Int
+  UserComment User     @relation(fields: [userId], references: [id])
 }

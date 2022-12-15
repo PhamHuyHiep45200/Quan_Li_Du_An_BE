@@ -12,7 +12,7 @@ export class ProjectService {
   }
   async findId(idUser: number) {
     const res = await this.prisma.userProject.findMany({
-      where: { id_user: idUser },
+      where: { id_user: idUser, status: 'APPROVED' },
       include: { Project: { include: { Group: { include: { Item: true } } } } },
     });
     const data = [];
@@ -25,6 +25,8 @@ export class ProjectService {
     return await this.prisma.project.create({
       data: {
         name: createProjectDto.name,
+        startDate: createProjectDto.startDate,
+        endDate: createProjectDto.endDate,
         UserProject: {
           create: {
             id_user: createProjectDto.id_user,

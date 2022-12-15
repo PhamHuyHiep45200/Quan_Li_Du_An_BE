@@ -16,6 +16,8 @@ import { MailService } from './mail/mail.service';
 import { ConfigModule } from '@nestjs/config';
 import { MailController } from './mail/mail.controller';
 import { EventsModule } from './event/events.module';
+import { DocsModule } from './docs/docs.module';
+import { CommentTaskModule } from './comment_task/comment_task.module';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { EventsModule } from './event/events.module';
     UserItemModule,
     ChartModule,
     EventsModule,
+    DocsModule,
+    CommentTaskModule,
   ],
   controllers: [AppController, MailController],
   providers: [AppService, MailService],

@@ -12,6 +12,8 @@ export class GroupService {
       data: {
         id_project: createGroupDto.id_project,
         name: createGroupDto.name,
+        startDate: createGroupDto.startDate,
+        endDate: createGroupDto.endDate,
         UserGroup: {
           create: {
             id_user: createGroupDto.id_user,

@@ -67,6 +67,8 @@ export class ItemService {
       data: {
         id_group: createItemDto.id_group,
         name: createItemDto.name,
+        startDate: createItemDto.startDate,
+        endDate: createItemDto.endDate,
         // UserItem: {
         //   create: {
         //     id_user: createItemDto.id_user,
