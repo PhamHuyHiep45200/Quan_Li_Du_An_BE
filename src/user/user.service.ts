@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { SearchUserDto } from './dto/search-user.dto';
+import { UpdateDeleteUserDto } from './dto/update-delete.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
@@ -42,6 +43,13 @@ export class UserService {
           },
         },
       },
+    });
+    return { status: 200, data };
+  }
+  async updateDelete(updateDeleteUserDto: UpdateDeleteUserDto, id: number) {
+    const data = await this.prisma.project.update({
+      where: { id },
+      data: { deleteFlg: updateDeleteUserDto.status },
     });
     return { status: 200, data };
   }

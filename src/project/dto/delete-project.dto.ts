@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateDocs {
+export class DeleteProjectDto {
   @ApiProperty()
-  data: string;
+  status: boolean;
 }

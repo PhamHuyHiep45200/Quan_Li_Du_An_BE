@@ -10,7 +10,9 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateItemDto } from './dto/create-item.dto';
+import { SearchAllItemDto } from './dto/search-all-item.dto';
 import { SearchUser } from './dto/search-user.dto';
+import { UpdateDeleteItemDto } from './dto/update-delete.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 import { ItemService } from './item.service';
 
@@ -21,6 +23,10 @@ export class ItemController {
   @Get()
   getAll() {
     return this.itemService.findAll();
+  }
+  @Get('/search-item')
+  searchAllItem(@Body() searchAllItemDto: SearchAllItemDto) {
+    return this.itemService.searchAll(searchAllItemDto);
   }
   @Get('/:idGroup')
   getItemId(@Param('idGroup', ParseIntPipe) idGroup: number) {
@@ -49,7 +55,10 @@ export class ItemController {
     return this.itemService.updateItem(id_item, updateItemDto);
   }
   @Put('delete/:id_item')
-  deleteItem(@Param('id_item', ParseIntPipe) id_item: number) {
-    return this.itemService.deleteItem(id_item);
+  deleteItem(
+    @Param('id_item', ParseIntPipe) id_item: number,
+    @Body() updateDeleteItemDto: UpdateDeleteItemDto,
+  ) {
+    return this.itemService.deleteItem(id_item, updateDeleteItemDto);
   }
 }

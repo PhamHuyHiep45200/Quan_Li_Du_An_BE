@@ -7,7 +7,8 @@ import { UpdateDocs } from './dto/update-docs.dto';
 export class DocsService {
   constructor(private prisma: PrismaService) {}
   getAllDocs() {
-    this.prisma.document.findMany();
+    const data = this.prisma.document.findMany();
+    return { status: 200, data };
   }
   async createDocs(createDocs: CreateDocs) {
     const data = await this.prisma.document.create({
@@ -21,18 +22,20 @@ export class DocsService {
     });
     return { status: 200, data };
   }
-  updateDocs(id: number, updateDocs: UpdateDocs) {
-    this.prisma.document.update({
+  async updateDocs(id: number, updateDocs: UpdateDocs) {
+    const data = await this.prisma.document.update({
       where: { id },
       data: updateDocs,
     });
+    return { status: 200, data };
   }
-  deleteDocs(id: number) {
-    this.prisma.document.update({
+  async deleteDocs(id: number) {
+    const data = await this.prisma.document.update({
       where: { id },
       data: {
         deleteFlg: true,
       },
     });
+    return { status: 200, data };
   }
 }

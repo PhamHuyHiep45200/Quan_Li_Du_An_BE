@@ -26,6 +26,9 @@ export class CreateTaskDto {
   descriptions: string;
 
   @ApiProperty()
+  private: boolean;
+
+  @ApiProperty()
   @IsOptional()
   userManager: number;
 

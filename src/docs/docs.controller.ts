@@ -7,10 +7,12 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { DocsService } from './docs.service';
 import { CreateDocs } from './dto/create-docs.dto';
 import { UpdateDocs } from './dto/update-docs.dto';
 
+@ApiTags('docs')
 @Controller('docs')
 export class DocsController {
   constructor(private docsService: DocsService) {}

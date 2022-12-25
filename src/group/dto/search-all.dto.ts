@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateDocs {
+export class SearchAllGroupDto {
   @ApiProperty()
-  data: string;
+  name: string;
 }

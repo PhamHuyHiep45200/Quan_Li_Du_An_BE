@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateGroupDto } from './dto/create-group.dto';
+import { SearchAllGroupDto } from './dto/search-all.dto';
 import { SearchUserGroup } from './dto/search-user.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
+import { UpdateDeleteGroupDto } from './dto/updateDelete.dto';
 
 @Injectable()
 export class GroupService {
@@ -27,6 +29,14 @@ export class GroupService {
   }
   findAll() {
     return this.prisma.group.findMany();
+  }
+  async searchAll(searchAllGroupDto: SearchAllGroupDto) {
+    const data = this.prisma.group.findMany({
+      where: {
+        name: { contains: searchAllGroupDto.name },
+      },
+    });
+    return { status: 200, data };
   }
   async findId(idProject: number) {
     const group = await this.prisma.project.findFirst({
@@ -62,10 +72,13 @@ export class GroupService {
     });
     return { status: 200, data };
   }
-  async deleteGroup(id_group: number) {
+  async deleteGroup(
+    id_group: number,
+    updateDeleteGroupDto: UpdateDeleteGroupDto,
+  ) {
     const data = this.prisma.group.update({
       where: { id: id_group },
-      data: { deleteFlg: true },
+      data: { deleteFlg: updateDeleteGroupDto.status },
     });
     return { status: 200, data };
   }

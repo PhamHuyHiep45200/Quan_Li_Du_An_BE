@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EventsGateway } from 'src/event/events.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { GetTaskDto } from './dto/get-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
@@ -10,13 +11,16 @@ export class TaskService {
     private prisma: PrismaService,
     private readonly eventsGateway: EventsGateway,
   ) {}
-  async findId(idItem: number) {
+  async findId(idItem: number, getTaskDto: GetTaskDto) {
     const dataAll = await this.prisma.task.findMany({
-      where: { id_item: idItem },
+      where: { id_item: idItem, private: getTaskDto.private ?? false },
       include: {
         taskParent: true,
         taskChildren: true,
-        UserTask: { include: { User: true } },
+        UserTask: {
+          include: { User: true },
+          where: { id_user: getTaskDto.idUser }, // get theo id Users
+        },
       },
     });
     const filterFuc = (id: number) => {
@@ -121,6 +125,7 @@ export class TaskService {
         start_Time: createTaskDto.start_Time,
         end_Time: createTaskDto.end_Time,
         thumbnail: createTaskDto.thumbnail,
+        private: createTaskDto.private,
         UserTask: {
           create: {
             id_user: createTaskDto.id_user,

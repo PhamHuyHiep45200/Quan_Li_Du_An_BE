@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { DeleteProjectDto } from './dto/delete-project.dto';
+import { SearchAllDto } from './dto/search-all.dto';
 import { QuerySearchUser } from './dto/search-user.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 
@@ -13,7 +15,14 @@ export class ProjectService {
   async findId(idUser: number) {
     const res = await this.prisma.userProject.findMany({
       where: { id_user: idUser, status: 'APPROVED' },
-      include: { Project: { include: { Group: { include: { Item: true } } } } },
+      include: {
+        Project: {
+          include: {
+            Group: { include: { Item: true, Document: true } },
+            Document: true,
+          },
+        },
+      },
     });
     const data = [];
     res.map((da) => {
@@ -21,6 +30,15 @@ export class ProjectService {
     });
     return { status: 200, data };
   }
+  async searchAll(searchAllDto: SearchAllDto) {
+    const data = this.prisma.project.findMany({
+      where: {
+        name: { contains: searchAllDto.name },
+      },
+    });
+    return { status: 200, data };
+  }
+
   async create(createProjectDto: CreateProjectDto) {
     return await this.prisma.project.create({
       data: {
@@ -78,10 +96,10 @@ export class ProjectService {
     });
     return { status: 200, data };
   }
-  async deleteProject(id_project: number) {
+  async deleteProject(id_project: number, deleteProjectDto: DeleteProjectDto) {
     const data = await this.prisma.project.update({
       where: { id: id_project },
-      data: { deleteFlg: true },
+      data: { deleteFlg: deleteProjectDto.status },
     });
     return { status: 200, data };
   }

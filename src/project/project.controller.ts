@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -11,6 +10,8 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateProjectDto } from './dto/create-project.dto';
+import { DeleteProjectDto } from './dto/delete-project.dto';
+import { SearchAllDto } from './dto/search-all.dto';
 import { QuerySearchUser } from './dto/search-user.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectService } from './project.service';
@@ -22,6 +23,10 @@ export class ProjectController {
   @Get()
   getAll() {
     return this.projectService.findAll();
+  }
+  @Get()
+  searchAll(@Body() searchAllDto: SearchAllDto) {
+    return this.projectService.searchAll(searchAllDto);
   }
   @Get('/:idUser')
   getProjectId(@Param('idUser', ParseIntPipe) idUser: number) {
@@ -50,7 +55,10 @@ export class ProjectController {
     return this.projectService.updateProject(id_project, updateProject);
   }
   @Put('/delete/:id_project')
-  deleteProject(@Param('id_project') id_project: number) {
-    return this.projectService.deleteProject(id_project);
+  deleteProject(
+    @Param('id_project') id_project: number,
+    @Body() deleteProjectDto: DeleteProjectDto,
+  ) {
+    return this.projectService.deleteProject(id_project, deleteProjectDto);
   }
 }

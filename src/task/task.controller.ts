@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { GetTaskDto } from './dto/get-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskService } from './task.service';
 
@@ -23,8 +24,11 @@ export class TaskController {
     return this.taskService.findAll();
   }
   @Get('/:idItem')
-  getTaskId(@Param('idItem', ParseIntPipe) idItem: number) {
-    return this.taskService.findId(idItem);
+  getTaskId(
+    @Param('idItem', ParseIntPipe) idItem: number,
+    @Query() getTaskDto: GetTaskDto,
+  ) {
+    return this.taskService.findId(idItem, getTaskDto);
   }
 
   @Post()

@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateItemDto } from './dto/create-item.dto';
+import { SearchAllItemDto } from './dto/search-all-item.dto';
+import { UpdateDeleteItemDto } from './dto/update-delete.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
 
 @Injectable()
@@ -19,6 +21,15 @@ export class ItemService {
       include: { User: true },
     });
     return { status: 200, item, user };
+  }
+
+  async searchAll(searchAllItemDto: SearchAllItemDto) {
+    const data = this.prisma.item.findMany({
+      where: {
+        name: { contains: searchAllItemDto.name },
+      },
+    });
+    return { status: 200, data };
   }
   async searchUsers(id_item, query) {
     let data = [];
@@ -84,10 +95,10 @@ export class ItemService {
     });
     return { status: 200, data };
   }
-  async deleteItem(id_item: number) {
+  async deleteItem(id_item: number, updateDeleteItemDto: UpdateDeleteItemDto) {
     const data = this.prisma.item.update({
       where: { id: id_item },
-      data: { deleteFlg: true },
+      data: { deleteFlg: updateDeleteItemDto.status },
     });
     return { status: 200, data };
   }

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UpdateDocs {
+export class UpdateDeleteItemDto {
   @ApiProperty()
-  data: string;
+  status: boolean;
 }
