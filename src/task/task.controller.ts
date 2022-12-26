@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { GetCalendarDto } from './dto/get-calendar.dto';
 import { GetTaskDto } from './dto/get-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskService } from './task.service';
@@ -19,6 +20,11 @@ import { TaskService } from './task.service';
 @Controller('task')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
+
+  @Get('/calendar')
+  getCalendar(@Query() getCalendarDto: GetCalendarDto) {
+    return this.taskService.getCalendar(getCalendarDto);
+  }
   @Get()
   getAllTask() {
     return this.taskService.findAll();

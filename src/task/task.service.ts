@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EventsGateway } from 'src/event/events.gateway';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { GetCalendarDto } from './dto/get-calendar.dto';
 import { GetTaskDto } from './dto/get-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
@@ -103,6 +104,35 @@ export class TaskService {
       });
     }
     return { status: 200, data, count: dataResponse?.Task?.length };
+  }
+  async getCalendar(getCalendar: GetCalendarDto) {
+    const data = await this.prisma.item.findMany({
+      where: {
+        OR: [
+          {
+            startDate: {
+              gte: getCalendar.start_date,
+              lte: getCalendar.end_date,
+            },
+          },
+          {
+            endDate: {
+              gte: getCalendar.start_date,
+              lte: getCalendar.end_date,
+            },
+          },
+        ],
+      },
+      include: {
+        UserItem: {
+          where: {
+            id_user: +getCalendar.id_user,
+            id_item: +getCalendar.id_item,
+          },
+        },
+      },
+    });
+    return { status: 200, data };
   }
   async create(createTaskDto: CreateTaskDto) {
     const id_user_item = await this.prisma.userItem.findFirst({
