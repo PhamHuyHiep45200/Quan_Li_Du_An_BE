@@ -12,12 +12,11 @@ import { UserProjectModule } from './user-project/user-project.module';
 import { UserGroupModule } from './user-group/user-group.module';
 import { UserItemModule } from './user_item/user_item.module';
 import { ChartModule } from './chart/chart.module';
-import { MailService } from './mail/mail.service';
 import { ConfigModule } from '@nestjs/config';
-import { MailController } from './mail/mail.controller';
 import { EventsModule } from './event/events.module';
 import { DocsModule } from './docs/docs.module';
 import { CommentTaskModule } from './comment_task/comment_task.module';
+import { WorkMeModule } from './work-me/work-me.module';
 
 @Module({
   imports: [
@@ -36,8 +35,9 @@ import { CommentTaskModule } from './comment_task/comment_task.module';
     EventsModule,
     DocsModule,
     CommentTaskModule,
+    WorkMeModule,
   ],
-  controllers: [AppController, MailController],
-  providers: [AppService, MailService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

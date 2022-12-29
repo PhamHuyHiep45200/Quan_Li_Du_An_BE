@@ -24,8 +24,8 @@ export class ProjectController {
   getAll() {
     return this.projectService.findAll();
   }
-  @Get()
-  searchAll(@Body() searchAllDto: SearchAllDto) {
+  @Get('/search-project')
+  searchAll(@Query() searchAllDto: SearchAllDto) {
     return this.projectService.searchAll(searchAllDto);
   }
   @Get('/:idUser')

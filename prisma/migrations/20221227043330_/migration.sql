@@ -5,7 +5,7 @@ CREATE TYPE "RoleType" AS ENUM ('SUPPERADMIN', 'ADMIN', 'USER');
 CREATE TYPE "StatusTask" AS ENUM ('OPEN', 'DOING', 'COMPLETED', 'ILLEGAL', 'PENDDING');
 
 -- CreateEnum
-CREATE TYPE "RoleProjectGroup" AS ENUM ('ADMIN', 'USER');
+CREATE TYPE "RoleProjectGroup" AS ENUM ('ADMIN', 'MANAGER', 'USER');
 
 -- CreateEnum
 CREATE TYPE "StatusVerify" AS ENUM ('REJECT', 'PENDDING', 'APPROVED');
@@ -44,6 +44,8 @@ CREATE TABLE "Project" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "typeName" TEXT NOT NULL DEFAULT 'project',
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
     "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -57,6 +59,8 @@ CREATE TABLE "Group" (
     "name" TEXT NOT NULL,
     "typeName" TEXT NOT NULL DEFAULT 'group',
     "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "id_project" INTEGER,
@@ -70,6 +74,8 @@ CREATE TABLE "Item" (
     "name" TEXT NOT NULL,
     "typeName" TEXT NOT NULL DEFAULT 'item',
     "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "id_group" INTEGER,
@@ -82,17 +88,32 @@ CREATE TABLE "Task" (
     "id" SERIAL NOT NULL,
     "id_item" INTEGER,
     "descriptions" TEXT NOT NULL,
-    "userManager" INTEGER,
     "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
     "status" "StatusTask" NOT NULL,
+    "thumbnail" TEXT[],
     "start_Time" TEXT,
     "end_Time" TEXT,
+    "private" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "level" TEXT,
     "taskParentId" INTEGER,
 
     CONSTRAINT "Task_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "History" (
+    "id" SERIAL NOT NULL,
+    "descriptions" TEXT,
+    "status" "StatusTask",
+    "start_Time" TEXT,
+    "end_Time" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "taskHistory" INTEGER NOT NULL,
+
+    CONSTRAINT "History_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -143,8 +164,38 @@ CREATE TABLE "UserTask" (
     "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
     "id_user" INTEGER NOT NULL,
     "id_task" INTEGER,
+    "id_taskManager" INTEGER,
+    "userManager" INTEGER,
 
     CONSTRAINT "UserTask_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Document" (
+    "id" SERIAL NOT NULL,
+    "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
+    "name" TEXT NOT NULL,
+    "data" TEXT NOT NULL,
+    "typeName" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "projectId" INTEGER,
+    "groupId" INTEGER,
+
+    CONSTRAINT "Document_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "CommentTask" (
+    "id" SERIAL NOT NULL,
+    "content" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
+    "taskId" INTEGER NOT NULL,
+    "userId" INTEGER NOT NULL,
+
+    CONSTRAINT "CommentTask_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -164,6 +215,9 @@ ALTER TABLE "Task" ADD CONSTRAINT "Task_id_item_fkey" FOREIGN KEY ("id_item") RE
 
 -- AddForeignKey
 ALTER TABLE "Task" ADD CONSTRAINT "Task_taskParentId_fkey" FOREIGN KEY ("taskParentId") REFERENCES "Task"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "History" ADD CONSTRAINT "History_taskHistory_fkey" FOREIGN KEY ("taskHistory") REFERENCES "Task"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserProject" ADD CONSTRAINT "UserProject_id_user_parent_fkey" FOREIGN KEY ("id_user_parent") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -194,3 +248,18 @@ ALTER TABLE "UserTask" ADD CONSTRAINT "UserTask_id_user_fkey" FOREIGN KEY ("id_u
 
 -- AddForeignKey
 ALTER TABLE "UserTask" ADD CONSTRAINT "UserTask_id_task_fkey" FOREIGN KEY ("id_task") REFERENCES "Task"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "UserTask" ADD CONSTRAINT "UserTask_id_taskManager_fkey" FOREIGN KEY ("id_taskManager") REFERENCES "Task"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Document" ADD CONSTRAINT "Document_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Document" ADD CONSTRAINT "Document_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "Group"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CommentTask" ADD CONSTRAINT "CommentTask_taskId_fkey" FOREIGN KEY ("taskId") REFERENCES "Task"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "CommentTask" ADD CONSTRAINT "CommentTask_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

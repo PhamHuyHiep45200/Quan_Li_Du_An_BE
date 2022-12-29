@@ -10,31 +10,41 @@ import { UpdateDeleteGroupDto } from './dto/updateDelete.dto';
 export class GroupService {
   constructor(private prisma: PrismaService) {}
   async create(createGroupDto: CreateGroupDto) {
-    return await this.prisma.group.create({
-      data: {
-        id_project: createGroupDto.id_project,
-        name: createGroupDto.name,
-        startDate: createGroupDto.startDate,
-        endDate: createGroupDto.endDate,
-        UserGroup: {
-          create: {
-            id_user: createGroupDto.id_user,
-            status: 'APPROVED',
-            role: 'ADMIN',
-            type: 'group',
+    const user = await this.prisma.userGroup.findFirst({
+      where: { id_user: createGroupDto.id_user },
+    });
+    console.log(user);
+
+    if (user.role !== 'USER') {
+      return await this.prisma.group.create({
+        data: {
+          id_project: createGroupDto.id_project,
+          name: createGroupDto.name,
+          startDate: createGroupDto.startDate,
+          endDate: createGroupDto.endDate,
+          UserGroup: {
+            create: {
+              id_user: createGroupDto.id_user,
+              status: 'APPROVED',
+              role: 'ADMIN',
+              type: 'group',
+            },
           },
         },
-      },
-    });
+      });
+    } else {
+      return { message: 'Bạn không có quyền' };
+    }
   }
   findAll() {
     return this.prisma.group.findMany();
   }
   async searchAll(searchAllGroupDto: SearchAllGroupDto) {
-    const data = this.prisma.group.findMany({
+    const data = await this.prisma.group.findMany({
       where: {
         name: { contains: searchAllGroupDto.name },
       },
+      include: { Project: true },
     });
     return { status: 200, data };
   }
@@ -76,7 +86,7 @@ export class GroupService {
     id_group: number,
     updateDeleteGroupDto: UpdateDeleteGroupDto,
   ) {
-    const data = this.prisma.group.update({
+    const data = await this.prisma.group.update({
       where: { id: id_group },
       data: { deleteFlg: updateDeleteGroupDto.status },
     });

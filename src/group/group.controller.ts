@@ -25,8 +25,8 @@ export class GroupController {
   getAllGroup() {
     return this.groupService.findAll();
   }
-  @Get('/search-all-group')
-  searchAllGroup(@Body() searchAllDto: SearchAllGroupDto) {
+  @Get('/search-group')
+  searchAllGroup(@Query() searchAllDto: SearchAllGroupDto) {
     return this.groupService.searchAll(searchAllDto);
   }
 

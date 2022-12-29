@@ -223,8 +223,9 @@ model UserTask {
 model Document {
   id          Int      @id @default(autoincrement())
   deleteFlg   Boolean  @default(false)
+  name        String
   data        String
-  type        String
+  typeName    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   projectId   Int?

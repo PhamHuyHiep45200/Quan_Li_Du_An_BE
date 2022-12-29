@@ -25,7 +25,7 @@ export class ItemController {
     return this.itemService.findAll();
   }
   @Get('/search-item')
-  searchAllItem(@Body() searchAllItemDto: SearchAllItemDto) {
+  searchAllItem(@Query() searchAllItemDto: SearchAllItemDto) {
     return this.itemService.searchAll(searchAllItemDto);
   }
   @Get('/:idGroup')

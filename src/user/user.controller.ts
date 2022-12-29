@@ -12,10 +12,12 @@ import {
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateIfnoUserDto } from './dto/update-user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { SearchUserDto } from './dto/search-user.dto';
 import { UpdateDeleteUserDto } from './dto/update-delete.dto';
+import { ForgotDto } from './dto/forgot-pass.dto';
+import { ForgotpassWord } from './dto/forgot-password.dto';
 
 @ApiTags('user')
 @Controller('user')
@@ -44,22 +46,29 @@ export class UserController {
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
   }
-
-  @Put('/delete-all-user/:id')
+  @Put('/update-user/:id')
+  updateUser(
+    @Body() updateIfnoUserDto: UpdateIfnoUserDto,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.userService.updateInfoUser(id, updateIfnoUserDto);
+  }
+  @Put('/delete-user/:id')
   deleteUser(
     @Body() updateDeleteUserDto: UpdateDeleteUserDto,
     @Param('id', ParseIntPipe) id: number,
   ) {
     return this.userService.updateDelete(updateDeleteUserDto, id);
   }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @Put('/forgot-password')
+  async forgotPass(@Query() data: ForgotDto) {
+    return await this.userService.forgotPassEmail(data);
   }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  @Put('/forgot-password/:id')
+  async forgotPassWord(
+    @Param('id') id: number,
+    @Body() forgotpassWord: ForgotpassWord,
+  ) {
+    return await this.userService.forgotPassWord(id, forgotpassWord);
   }
 }

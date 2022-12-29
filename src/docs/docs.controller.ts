@@ -21,6 +21,10 @@ export class DocsController {
   getAllDocs() {
     return this.docsService.getAllDocs();
   }
+  @Get('/:id')
+  getDocsById(@Param('id', ParseIntPipe) id: number) {
+    return this.docsService.getDocsById(id);
+  }
   @Post()
   createDocs(@Body() createDocs: CreateDocs) {
     return this.docsService.createDocs(createDocs);

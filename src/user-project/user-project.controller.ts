@@ -5,6 +5,7 @@ import {
   Get,
   Put,
   Param,
+  Query,
   ParseIntPipe,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';

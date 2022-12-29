@@ -13,14 +13,25 @@ export class TaskService {
     private readonly eventsGateway: EventsGateway,
   ) {}
   async findId(idItem: number, getTaskDto: GetTaskDto) {
+    let where_id_user;
+    let where_private;
+    if (getTaskDto.id_user) {
+      where_id_user = { id_user: +getTaskDto.id_user };
+    }
+    if (getTaskDto.private) {
+      where_private = { private: getTaskDto.private === '0' ? false : true };
+    }
     const dataAll = await this.prisma.task.findMany({
-      where: { id_item: idItem, private: getTaskDto.private ?? false },
+      where: {
+        id_item: idItem,
+        // private: getTaskDto.private === '0' ? false : true,
+      },
       include: {
         taskParent: true,
         taskChildren: true,
         UserTask: {
           include: { User: true },
-          where: { id_user: getTaskDto.idUser }, // get theo id Users
+          // where: { ...where_id_user }, // get theo id Users
         },
       },
     });
@@ -46,10 +57,16 @@ export class TaskService {
       include: {
         Task: {
           include: {
-            UserTask: { include: { User: true } },
+            UserTask: {
+              include: { User: true },
+              where: { ...where_id_user },
+            },
             taskParent: true,
             taskChildren: true,
             TaskUserManager: { include: { User: true } },
+          },
+          where: {
+            ...where_private,
           },
         },
       },
@@ -61,7 +78,10 @@ export class TaskService {
         type: 'OPEN',
         data: deQuyData(
           dataResponse?.Task?.filter(
-            (item) => item?.status === 'OPEN' && item?.taskParentId == null,
+            (item) =>
+              item?.status === 'OPEN' &&
+              item?.taskParentId == null &&
+              item?.UserTask.length > 0,
           ),
         ),
       });
@@ -70,7 +90,10 @@ export class TaskService {
         type: 'DOING',
         data: deQuyData(
           dataResponse?.Task?.filter(
-            (item) => item?.status === 'DOING' && item?.taskParentId == null,
+            (item) =>
+              item?.status === 'DOING' &&
+              item?.taskParentId == null &&
+              item?.UserTask.length > 0,
           ),
         ),
       });
@@ -80,7 +103,9 @@ export class TaskService {
         data: deQuyData(
           dataResponse?.Task?.filter(
             (item) =>
-              item?.status === 'COMPLETED' && item?.taskParentId == null,
+              item?.status === 'COMPLETED' &&
+              item?.taskParentId == null &&
+              item?.UserTask.length > 0,
           ),
         ),
       });
@@ -89,7 +114,10 @@ export class TaskService {
         type: 'ILLEGAL',
         data: deQuyData(
           dataResponse?.Task?.filter(
-            (item) => item?.status === 'ILLEGAL' && item?.taskParentId == null,
+            (item) =>
+              item?.status === 'ILLEGAL' &&
+              item?.taskParentId == null &&
+              item?.UserTask.length > 0,
           ),
         ),
       });
@@ -98,12 +126,16 @@ export class TaskService {
         type: 'PENDDING',
         data: deQuyData(
           dataResponse?.Task?.filter(
-            (item) => item?.status === 'PENDDING' && item?.taskParentId == null,
+            (item) =>
+              item?.status === 'PENDDING' &&
+              item?.taskParentId == null &&
+              item?.UserTask.length > 0,
           ),
         ),
       });
     }
-    return { status: 200, data, count: dataResponse?.Task?.length };
+    const count = data.reduce((prev, cur) => prev + cur.data.length, 0);
+    return { status: 200, data, count, dataResponse };
   }
   async getCalendar(getCalendar: GetCalendarDto) {
     const data = await this.prisma.item.findMany({
@@ -141,14 +173,14 @@ export class TaskService {
     if (!id_user_item) {
       await this.prisma.userItem.create({
         data: {
-          id_item: createTaskDto.id_item,
+          id_item: createTaskDto.id_item ?? null,
           id_user: createTaskDto.id_user,
         },
       });
     }
     const data = await this.prisma.task.create({
       data: {
-        id_item: createTaskDto.id_item,
+        id_item: createTaskDto.id_item ?? null,
         status: createTaskDto.status,
         taskParentId: createTaskDto.taskParentId,
         descriptions: createTaskDto.descriptions,

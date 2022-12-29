@@ -31,7 +31,7 @@ export class ProjectService {
     return { status: 200, data };
   }
   async searchAll(searchAllDto: SearchAllDto) {
-    const data = this.prisma.project.findMany({
+    const data = await this.prisma.project.findMany({
       where: {
         name: { contains: searchAllDto.name },
       },

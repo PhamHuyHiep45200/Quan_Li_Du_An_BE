@@ -4,9 +4,9 @@ import { ApiProperty } from '@nestjs/swagger';
 export class GetTaskDto {
   @ApiProperty()
   @Optional()
-  private: boolean;
+  private: string;
 
   @ApiProperty()
   @Optional()
-  idUser: number;
+  id_user: number;
 }

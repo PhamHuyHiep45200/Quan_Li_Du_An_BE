@@ -24,10 +24,11 @@ export class ItemService {
   }
 
   async searchAll(searchAllItemDto: SearchAllItemDto) {
-    const data = this.prisma.item.findMany({
+    const data = await this.prisma.item.findMany({
       where: {
         name: { contains: searchAllItemDto.name },
       },
+      include: { Group: { include: { Project: true } } },
     });
     return { status: 200, data };
   }
@@ -96,7 +97,7 @@ export class ItemService {
     return { status: 200, data };
   }
   async deleteItem(id_item: number, updateDeleteItemDto: UpdateDeleteItemDto) {
-    const data = this.prisma.item.update({
+    const data = await this.prisma.item.update({
       where: { id: id_item },
       data: { deleteFlg: updateDeleteItemDto.status },
     });

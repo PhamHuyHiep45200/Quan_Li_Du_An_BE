@@ -1,20 +1,40 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as SendGrid from '@sendgrid/mail';
+import { ExecutionStatus } from 'src/utils/responses.common';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const sgMail = require('@sendgrid/mail');
+
+type MailInput = {
+  to: string;
+  subject: string;
+  html: string;
+};
 
 @Injectable()
 export class MailService {
   constructor(private readonly configService: ConfigService) {
-    // Don't forget this one.
-    // The apiKey is required to authenticate our
-    // request to SendGrid API.
-    SendGrid.setApiKey(this.configService.get<string>('SEND_GRID_KEY'));
+    sgMail.setApiKey(configService.get('SENDGRID_API_KEY'));
   }
 
-  async send(mail: SendGrid.MailDataRequired) {
-    const transport = await SendGrid.send(mail);
-    // avoid this on production. use log instead :)
-    console.log(`E-Mail sent to ${mail.to}`);
-    return transport;
+  async sendMail(input: MailInput) {
+    const msg = {
+      from: this.configService.get('FROM_EMAIL'),
+      to: input.to,
+      subject: input.subject,
+      text: 'and easy to do anywhere, even with Node.js',
+      html: input.html,
+    };
+    await sgMail.send(msg).catch((error) => {
+      console.log('error: ', error);
+      console.log('error: ', error.response.body);
+      return {
+        status: ExecutionStatus.FAILED,
+        data: error.toString(),
+      };
+    });
+    return {
+      status: ExecutionStatus.OK,
+      message: 'Email sent',
+    };
   }
 }

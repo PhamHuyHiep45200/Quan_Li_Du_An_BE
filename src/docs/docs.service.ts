@@ -6,15 +6,22 @@ import { UpdateDocs } from './dto/update-docs.dto';
 @Injectable()
 export class DocsService {
   constructor(private prisma: PrismaService) {}
-  getAllDocs() {
-    const data = this.prisma.document.findMany();
+  async getAllDocs() {
+    const data = await this.prisma.document.findMany();
+    return { status: 200, data };
+  }
+  async getDocsById(id: number) {
+    const data = await this.prisma.document.findFirst({
+      where: { id },
+    });
     return { status: 200, data };
   }
   async createDocs(createDocs: CreateDocs) {
     const data = await this.prisma.document.create({
       data: {
+        name: createDocs.name,
         data: createDocs.data,
-        type: 'Docs',
+        typeName: 'Docs',
         deleteFlg: false,
         projectId: createDocs.projectId ? createDocs.projectId : null,
         groupId: createDocs.groupId ? createDocs.groupId : null,
