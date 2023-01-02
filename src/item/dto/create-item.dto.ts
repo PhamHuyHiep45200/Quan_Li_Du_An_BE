@@ -13,4 +13,6 @@ export class CreateItemDto {
   startDate: Date;
   @ApiProperty()
   endDate: Date;
+  @ApiProperty()
+  personCreate: number;
 }

@@ -30,22 +30,13 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
-CREATE TABLE "Notification" (
-    "id" SERIAL NOT NULL,
-    "id_user" INTEGER NOT NULL,
-    "descriptions" TEXT NOT NULL,
-    "deleteFlg" BOOLEAN NOT NULL DEFAULT true,
-
-    CONSTRAINT "Notification_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "Project" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "typeName" TEXT NOT NULL DEFAULT 'project',
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3) NOT NULL,
+    "personCreate" INTEGER NOT NULL,
     "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -61,6 +52,7 @@ CREATE TABLE "Group" (
     "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3) NOT NULL,
+    "personCreate" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "id_project" INTEGER,
@@ -76,6 +68,7 @@ CREATE TABLE "Item" (
     "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3) NOT NULL,
+    "personCreate" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "id_group" INTEGER,
@@ -91,9 +84,8 @@ CREATE TABLE "Task" (
     "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
     "status" "StatusTask" NOT NULL,
     "thumbnail" TEXT[],
-    "start_Time" TEXT,
-    "end_Time" TEXT,
-    "private" BOOLEAN NOT NULL DEFAULT false,
+    "start_Time" TIMESTAMP(3),
+    "end_Time" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "level" TEXT,
@@ -105,12 +97,12 @@ CREATE TABLE "Task" (
 -- CreateTable
 CREATE TABLE "History" (
     "id" SERIAL NOT NULL,
-    "descriptions" TEXT,
-    "status" "StatusTask",
-    "start_Time" TEXT,
-    "end_Time" TEXT,
+    "createTask" BOOLEAN NOT NULL,
+    "oldStatus" "StatusTask",
+    "newStatus" "StatusTask",
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "idUserChange" INTEGER NOT NULL,
     "taskHistory" INTEGER NOT NULL,
 
     CONSTRAINT "History_pkey" PRIMARY KEY ("id")
@@ -198,11 +190,20 @@ CREATE TABLE "CommentTask" (
     CONSTRAINT "CommentTask_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "Message" (
+    "id" SERIAL NOT NULL,
+    "id_user_send" INTEGER NOT NULL,
+    "id_user_accept" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "deleteFlg" BOOLEAN NOT NULL DEFAULT false,
+
+    CONSTRAINT "Message_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
-
--- AddForeignKey
-ALTER TABLE "Notification" ADD CONSTRAINT "Notification_id_user_fkey" FOREIGN KEY ("id_user") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Group" ADD CONSTRAINT "Group_id_project_fkey" FOREIGN KEY ("id_project") REFERENCES "Project"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -215,6 +216,9 @@ ALTER TABLE "Task" ADD CONSTRAINT "Task_id_item_fkey" FOREIGN KEY ("id_item") RE
 
 -- AddForeignKey
 ALTER TABLE "Task" ADD CONSTRAINT "Task_taskParentId_fkey" FOREIGN KEY ("taskParentId") REFERENCES "Task"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "History" ADD CONSTRAINT "History_idUserChange_fkey" FOREIGN KEY ("idUserChange") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "History" ADD CONSTRAINT "History_taskHistory_fkey" FOREIGN KEY ("taskHistory") REFERENCES "Task"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -263,3 +267,9 @@ ALTER TABLE "CommentTask" ADD CONSTRAINT "CommentTask_taskId_fkey" FOREIGN KEY (
 
 -- AddForeignKey
 ALTER TABLE "CommentTask" ADD CONSTRAINT "CommentTask_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Message" ADD CONSTRAINT "Message_id_user_send_fkey" FOREIGN KEY ("id_user_send") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Message" ADD CONSTRAINT "Message_id_user_accept_fkey" FOREIGN KEY ("id_user_accept") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

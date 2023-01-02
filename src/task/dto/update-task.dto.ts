@@ -27,4 +27,7 @@ export class UpdateTaskDto {
   @IsOptional()
   @ApiProperty()
   userManager: number;
+
+  @ApiProperty()
+  idUserChange: number;
 }

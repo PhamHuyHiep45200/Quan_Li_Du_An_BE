@@ -60,4 +60,17 @@ export class ChartService {
     });
     return { status: 200, data: dataSubmit, count: countTask.length };
   }
+  async getFullStatistic() {
+    const project = await this.prisma.project.findMany({});
+    const group = await this.prisma.group.findMany();
+    const user = await this.prisma.user.findMany();
+    const item = await this.prisma.item.findMany();
+    return {
+      status: 200,
+      project: project.length,
+      group: group.length,
+      item: item.length,
+      user: user.length,
+    };
+  }
 }

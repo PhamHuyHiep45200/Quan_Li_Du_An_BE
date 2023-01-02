@@ -26,17 +26,14 @@ export class CreateTaskDto {
   descriptions: string;
 
   @ApiProperty()
-  private: boolean;
-
-  @ApiProperty()
   @IsOptional()
   userManager: number;
 
   @ApiProperty()
   @IsOptional()
-  start_Time: string;
+  start_Time: Date;
 
   @ApiProperty()
   @IsOptional()
-  end_Time: string;
+  end_Time: Date;
 }

@@ -13,4 +13,6 @@ export class CreateGroupDto {
   startDate: Date;
   @ApiProperty()
   endDate: Date;
+  @ApiProperty()
+  personCreate: number;
 }

@@ -14,24 +14,18 @@ export class TaskService {
   ) {}
   async findId(idItem: number, getTaskDto: GetTaskDto) {
     let where_id_user;
-    let where_private;
     if (getTaskDto.id_user) {
       where_id_user = { id_user: +getTaskDto.id_user };
-    }
-    if (getTaskDto.private) {
-      where_private = { private: getTaskDto.private === '0' ? false : true };
     }
     const dataAll = await this.prisma.task.findMany({
       where: {
         id_item: idItem,
-        // private: getTaskDto.private === '0' ? false : true,
       },
       include: {
         taskParent: true,
         taskChildren: true,
         UserTask: {
           include: { User: true },
-          // where: { ...where_id_user }, // get theo id Users
         },
       },
     });
@@ -64,9 +58,6 @@ export class TaskService {
             taskParent: true,
             taskChildren: true,
             TaskUserManager: { include: { User: true } },
-          },
-          where: {
-            ...where_private,
           },
         },
       },
@@ -134,37 +125,36 @@ export class TaskService {
         ),
       });
     }
+    const listUser = await this.prisma.item.findFirst({
+      where: { id: idItem },
+      include: { Group: { include: { UserGroup: true } } },
+    });
     const count = data.reduce((prev, cur) => prev + cur.data.length, 0);
-    return { status: 200, data, count, dataResponse };
+    return { status: 200, data, count, dataResponse, list: listUser };
   }
   async getCalendar(getCalendar: GetCalendarDto) {
-    const data = await this.prisma.item.findMany({
+    const data = await this.prisma.task.findMany({
       where: {
+        id_item: +getCalendar.id_item,
         OR: [
           {
-            startDate: {
+            start_Time: {
               gte: getCalendar.start_date,
               lte: getCalendar.end_date,
             },
           },
           {
-            endDate: {
+            end_Time: {
               gte: getCalendar.start_date,
               lte: getCalendar.end_date,
             },
           },
         ],
       },
-      include: {
-        UserItem: {
-          where: {
-            id_user: +getCalendar.id_user,
-            id_item: +getCalendar.id_item,
-          },
-        },
-      },
+      include: { UserTask: { where: { id_user: +getCalendar.id_user } } },
     });
-    return { status: 200, data };
+    const requestData = data.filter((da) => da.UserTask.length > 0);
+    return { status: 200, data: requestData };
   }
   async create(createTaskDto: CreateTaskDto) {
     const id_user_item = await this.prisma.userItem.findFirst({
@@ -187,11 +177,18 @@ export class TaskService {
         start_Time: createTaskDto.start_Time,
         end_Time: createTaskDto.end_Time,
         thumbnail: createTaskDto.thumbnail,
-        private: createTaskDto.private,
         UserTask: {
           create: {
             id_user: createTaskDto.id_user,
             userManager: createTaskDto.userManager,
+          },
+        },
+        History: {
+          create: {
+            createTask: true,
+            oldStatus: createTaskDto.status,
+            newStatus: createTaskDto.status,
+            idUserChange: createTaskDto.id_user,
           },
         },
       },
@@ -203,11 +200,28 @@ export class TaskService {
     return this.prisma.item.findMany();
   }
   async updateStatusTask(id: number, query: UpdateTaskDto) {
+    console.log('data', query);
+    const dataRequest = { ...query };
+    delete dataRequest.idUserChange;
+    const task = await this.prisma.task.findFirst({
+      where: { id },
+    });
     const data = await this.prisma.task.update({
       where: { id },
-      data: query,
+      data: dataRequest,
     });
-    await this.eventsGateway.handleEvent(query);
+    if (data && query.status) {
+      await this.prisma.history.create({
+        data: {
+          createTask: false,
+          oldStatus: task.status,
+          newStatus: query.status,
+          idUserChange: +query.idUserChange,
+          taskHistory: id,
+        },
+      });
+    }
+    // await this.eventsGateway.handleEvent(query);
     return { status: 200, data };
   }
   async deleteStatusTask(id: number) {

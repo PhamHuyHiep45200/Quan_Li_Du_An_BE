@@ -63,7 +63,11 @@ export class UserProjectService {
         },
       },
     });
-    return { status: 200, data };
+    const group = await this.prisma.project.findFirst({
+      where: { id: id_project },
+      include: { Group: true },
+    });
+    return { status: 200, data, list: group };
   }
   // async updateById(id: number, updateUserProjectDto: UpdateUserProjectDto) {
   //   const user = await this.prisma.userProject.findFirst({

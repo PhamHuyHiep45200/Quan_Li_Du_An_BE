@@ -10,18 +10,21 @@ import { UpdateDeleteGroupDto } from './dto/updateDelete.dto';
 export class GroupService {
   constructor(private prisma: PrismaService) {}
   async create(createGroupDto: CreateGroupDto) {
-    const user = await this.prisma.userGroup.findFirst({
+    console.log(createGroupDto);
+
+    const user = await this.prisma.userProject.findFirst({
       where: { id_user: createGroupDto.id_user },
     });
     console.log(user);
 
-    if (user.role !== 'USER') {
+    if (user?.role !== 'USER') {
       return await this.prisma.group.create({
         data: {
           id_project: createGroupDto.id_project,
           name: createGroupDto.name,
           startDate: createGroupDto.startDate,
           endDate: createGroupDto.endDate,
+          personCreate: createGroupDto.personCreate,
           UserGroup: {
             create: {
               id_user: createGroupDto.id_user,
@@ -62,6 +65,7 @@ export class GroupService {
   async searchUserGroup(id_group: number, query: SearchUserGroup) {
     const userAll = await this.prisma.user.findMany({
       where: {
+        deleteFlg: true,
         email: { contains: query.q },
       },
     });
@@ -76,7 +80,7 @@ export class GroupService {
     return { status: 200, res };
   }
   async updateGroup(id_group: number, updateUserGroupDto: UpdateGroupDto) {
-    const data = this.prisma.group.update({
+    const data = await this.prisma.group.update({
       where: { id: id_group },
       data: { name: updateUserGroupDto.name },
     });

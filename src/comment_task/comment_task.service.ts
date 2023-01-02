@@ -14,7 +14,10 @@ export class CommentTaskService {
     const data = await this.prisma.commentTask.create({
       data: createCommentTask,
     });
-    return { status: 200, data };
+    const UserComment = await this.prisma.user.findFirst({
+      where: { id: createCommentTask.userId },
+    });
+    return { status: 200, data: { ...data, ...UserComment } };
   }
   async updateCommentTask(id: number, updateCommentTask: UpdateCommentTaskDto) {
     const data = await this.prisma.commentTask.update({
@@ -32,9 +35,15 @@ export class CommentTaskService {
   }
   async getByIdCommentTask(id_task: number) {
     const data = await this.prisma.commentTask.findMany({
-      where: { taskId: id_task },
+      where: { taskId: id_task, deleteFlg: false },
       orderBy: { createdAt: 'asc' },
+      include: { UserComment: true },
     });
-    return { status: 200, data };
+    const history = await this.prisma.history.findMany({
+      where: { taskHistory: id_task },
+      orderBy: { createdAt: 'asc' },
+      include: { UserHistory: true },
+    });
+    return { status: 200, data, history };
   }
 }

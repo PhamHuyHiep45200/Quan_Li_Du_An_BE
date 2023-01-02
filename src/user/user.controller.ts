@@ -18,6 +18,7 @@ import { SearchUserDto } from './dto/search-user.dto';
 import { UpdateDeleteUserDto } from './dto/update-delete.dto';
 import { ForgotDto } from './dto/forgot-pass.dto';
 import { ForgotpassWord } from './dto/forgot-password.dto';
+import { ChangePassWord } from './dto/change-password.dto';
 
 @ApiTags('user')
 @Controller('user')
@@ -70,5 +71,12 @@ export class UserController {
     @Body() forgotpassWord: ForgotpassWord,
   ) {
     return await this.userService.forgotPassWord(id, forgotpassWord);
+  }
+  @Put('/change-password/:id')
+  async changePassWord(
+    @Param('id') id: number,
+    @Body() changePassWord: ChangePassWord,
+  ) {
+    return await this.userService.changePassWord(id, changePassWord);
   }
 }

@@ -18,7 +18,13 @@ export class ProjectService {
       include: {
         Project: {
           include: {
-            Group: { include: { Item: true, Document: true } },
+            Group: {
+              include: {
+                Item: { where: { deleteFlg: false } },
+                Document: true,
+              },
+              where: { deleteFlg: false },
+            },
             Document: true,
           },
         },
@@ -26,7 +32,9 @@ export class ProjectService {
     });
     const data = [];
     res.map((da) => {
-      data.push(da.Project);
+      if (!da.Project.deleteFlg) {
+        data.push(da.Project);
+      }
     });
     return { status: 200, data };
   }
@@ -45,6 +53,7 @@ export class ProjectService {
         name: createProjectDto.name,
         startDate: createProjectDto.startDate,
         endDate: createProjectDto.endDate,
+        personCreate: createProjectDto.personCreate,
         UserProject: {
           create: {
             id_user: createProjectDto.id_user,
@@ -59,6 +68,7 @@ export class ProjectService {
   async searchUserProject(id_project: number, query: QuerySearchUser) {
     const userAll = await this.prisma.user.findMany({
       where: {
+        deleteFlg: false,
         email: { contains: query.q },
       },
     });

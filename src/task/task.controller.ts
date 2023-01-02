@@ -44,7 +44,7 @@ export class TaskController {
   @Put('update/:id')
   updateStatusTask(
     @Param('id', ParseIntPipe) id: number,
-    @Query() updateTaskDto: UpdateTaskDto,
+    @Body() updateTaskDto: UpdateTaskDto,
   ) {
     return this.taskService.updateStatusTask(id, updateTaskDto);
   }

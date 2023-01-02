@@ -9,4 +9,6 @@ export class CreateProjectDto {
   startDate: Date;
   @ApiProperty()
   endDate: Date;
+  @ApiProperty()
+  personCreate: number;
 }

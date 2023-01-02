@@ -29,6 +29,10 @@ export class UserGroupController {
   getUsersProject(@Param('id_group', ParseIntPipe) id_group: number) {
     return this.userGroupService.getUsersGroup(id_group);
   }
+  @Get('/item/:id_item')
+  getUsersGroupFromItem(@Param('id_item', ParseIntPipe) id_item: number) {
+    return this.userGroupService.getUsersGroupFromItem(id_item);
+  }
   @Get('search-group/:id_project')
   searchGroup(@Param('id_project', ParseIntPipe) id_project: number) {
     return this.userGroupService.searchGroup(id_project);

@@ -69,7 +69,11 @@ export class UserGroupService {
       where: { id_group, status: 'APPROVED' },
       include: { User: true },
     });
-    return { status: 200, data };
+    const item = await this.prisma.group.findFirst({
+      where: { id: id_group },
+      include: { Item: true },
+    });
+    return { status: 200, data, list: item };
   }
   async updateUserGroup(id: number, updateUserGroupDto: UpdateUserGrouptDto) {
     const user = await this.prisma.userGroup.findFirst({
@@ -97,6 +101,15 @@ export class UserGroupService {
     const data = await this.prisma.userProject.findMany({
       where: { id_project: id_project },
       include: { User: true },
+    });
+    return { status: 200, data };
+  }
+  async getUsersGroupFromItem(id_item: number) {
+    const data = await this.prisma.item.findFirst({
+      where: { id: id_item },
+      include: {
+        Group: { include: { UserGroup: { include: { User: true } } } },
+      },
     });
     return { status: 200, data };
   }

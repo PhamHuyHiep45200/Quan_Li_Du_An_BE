@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MailServiceFromNodeMailer } from 'src/mail/mailFromNodemailer.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { ExecutionStatus } from 'src/utils/responses.common';
+import { ChangePassWord } from './dto/change-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ForgotDto } from './dto/forgot-pass.dto';
 import { ForgotpassWord } from './dto/forgot-password.dto';
@@ -60,6 +61,7 @@ export class UserService {
   async searchUser(search: SearchUserDto) {
     const data = await this.prisma.user.findMany({
       where: {
+        deleteFlg: false,
         email: {
           contains: search.q,
         },
@@ -131,5 +133,21 @@ export class UserService {
       data: { password: forgotpassWord.password },
     });
     return { status: 200, data };
+  }
+  async changePassWord(id: number, changePassWord: ChangePassWord) {
+    const user = await this.prisma.user.findFirst({
+      where: { id },
+    });
+    console.log(user, changePassWord);
+
+    if (user.password === changePassWord.passWord) {
+      const data = await this.prisma.user.update({
+        where: { id },
+        data: { password: changePassWord.newPassWord },
+      });
+      return { status: 200, data };
+    } else {
+      return { status: 400, message: 'Mật khẩu không chính xác!' };
+    }
   }
 }

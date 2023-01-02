@@ -15,4 +15,9 @@ export class ChartController {
   getChartItem(@Param('id', ParseIntPipe) id: number) {
     return this.chartService.getChartItem(id);
   }
+
+  @Get('/statistic/full')
+  getFull() {
+    return this.chartService.getFullStatistic();
+  }
 }

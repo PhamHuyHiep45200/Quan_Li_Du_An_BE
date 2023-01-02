@@ -38,80 +38,83 @@ enum StatusVerify {
 }
 
 model User {
-  id                Int            @id @default(autoincrement())
+  id                Int           @id @default(autoincrement())
   firstName         String
   lastName          String
   birthday          DateTime
-  email             String         @unique
+  email             String        @unique
   password          String
   thumbnail         String
   phone             String
   gender            String
   role              RoleType
   deleteFlg         Boolean
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-  Notification      Notification[]
-  UserProject       UserProject[]  @relation("project_user")
-  UserGroup         UserGroup[]    @relation("group_user")
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  UserProject       UserProject[] @relation("project_user")
+  UserGroup         UserGroup[]   @relation("group_user")
   UserItem          UserItem[]
   UserTask          UserTask[]
-  UserGroupParent   UserGroup[]    @relation("group_parent")
-  UserProjectParent UserProject[]  @relation("project_parent")
+  UserGroupParent   UserGroup[]   @relation("group_parent")
+  UserProjectParent UserProject[] @relation("project_parent")
   CommentTask       CommentTask[]
-}
-
-model Notification {
-  id           Int     @id @default(autoincrement())
-  id_user      Int
-  User         User?   @relation(fields: [id_user], references: [id])
-  descriptions String
-  deleteFlg    Boolean @default(true)
+  History           History[]
+  user_send         Message[]     @relation("send")
+  user_accept       Message[]     @relation("accept")
+  Project           Project[]
+  Group             Group[]
+  Item              Item[]
 }
 
 model Project {
-  id          Int           @id @default(autoincrement())
-  name        String
-  typeName    String        @default("project")
-  startDate   DateTime
-  endDate     DateTime
-  deleteFlg   Boolean       @default(false)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  Group       Group[]
-  UserProject UserProject[]
-  Document    Document[]
+  id           Int           @id @default(autoincrement())
+  name         String
+  typeName     String        @default("project")
+  startDate    DateTime
+  endDate      DateTime
+  personCreate Int
+  deleteFlg    Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  Group        Group[]
+  UserProject  UserProject[]
+  Document     Document[]
+  PersonCreate User          @relation(fields: [personCreate], references: [id])
 }
 
 model Group {
-  id         Int         @id @default(autoincrement())
-  name       String
-  typeName   String      @default("group")
-  deleteFlg  Boolean     @default(false)
-  startDate  DateTime
-  endDate    DateTime
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  id_project Int?
-  Project    Project?    @relation(fields: [id_project], references: [id])
-  Item       Item[]
-  UserGroup  UserGroup[]
-  Document   Document[]
+  id           Int         @id @default(autoincrement())
+  name         String
+  typeName     String      @default("group")
+  deleteFlg    Boolean     @default(false)
+  startDate    DateTime
+  endDate      DateTime
+  personCreate Int
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  id_project   Int?
+  Project      Project?    @relation(fields: [id_project], references: [id])
+  Item         Item[]
+  UserGroup    UserGroup[]
+  Document     Document[]
+  PersonCreate User        @relation(fields: [personCreate], references: [id])
 }
 
 model Item {
-  id        Int        @id @default(autoincrement())
-  name      String
-  typeName  String     @default("item")
-  deleteFlg Boolean    @default(false)
-  startDate DateTime
-  endDate   DateTime
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  id_group  Int?
-  Group     Group?     @relation(fields: [id_group], references: [id])
-  Task      Task[]
-  UserItem  UserItem[]
+  id           Int        @id @default(autoincrement())
+  name         String
+  typeName     String     @default("item")
+  deleteFlg    Boolean    @default(false)
+  startDate    DateTime
+  endDate      DateTime
+  personCreate Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  id_group     Int?
+  Group        Group?     @relation(fields: [id_group], references: [id])
+  Task         Task[]
+  UserItem     UserItem[]
+  PersonCreate User       @relation(fields: [personCreate], references: [id])
 }
 
 model Task {
@@ -129,11 +132,9 @@ model Task {
 
   thumbnail String[]
 
-  start_Time String?
+  start_Time DateTime?
 
-  end_Time String?
-
-  private Boolean @default(false)
+  end_Time DateTime?
 
   createdAt DateTime @default(now())
 
@@ -152,19 +153,19 @@ model Task {
 model History {
   id Int @id @default(autoincrement())
 
-  descriptions String?
+  createTask Boolean
 
-  status StatusTask?
+  oldStatus StatusTask?
 
-  start_Time String?
-
-  end_Time String?
+  newStatus StatusTask?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  taskHistory Int
-  TaskHistory Task @relation(fields: [taskHistory], references: [id])
+  idUserChange Int
+  UserHistory  User @relation(fields: [idUserChange], references: [id])
+  taskHistory  Int
+  TaskHistory  Task @relation(fields: [taskHistory], references: [id])
 }
 
 model UserProject {
@@ -244,4 +245,15 @@ model CommentTask {
   commentTask Task     @relation(fields: [taskId], references: [id])
   userId      Int
   UserComment User     @relation(fields: [userId], references: [id])
+}
+
+model Message {
+  id             Int      @id @default(autoincrement())
+  id_user_send   Int
+  id_user_accept Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  deleteFlg      Boolean  @default(false)
+  user_send      User     @relation("send", fields: [id_user_send], references: [id])
+  user_accept    User     @relation("accept", fields: [id_user_accept], references: [id])
 }

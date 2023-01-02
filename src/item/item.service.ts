@@ -81,6 +81,7 @@ export class ItemService {
         name: createItemDto.name,
         startDate: createItemDto.startDate,
         endDate: createItemDto.endDate,
+        personCreate: createItemDto.personCreate,
         // UserItem: {
         //   create: {
         //     id_user: createItemDto.id_user,
@@ -90,7 +91,7 @@ export class ItemService {
     });
   }
   async updateItem(id_item: number, updateItemDto: UpdateItemDto) {
-    const data = this.prisma.item.update({
+    const data = await this.prisma.item.update({
       where: { id: id_item },
       data: { name: updateItemDto.name },
     });
